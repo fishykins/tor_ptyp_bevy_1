@@ -1,0 +1,13 @@
+[package]
+name = "tor_server"
+version = "0.1.0"
+edition = "2018"
+description = "Game client"
+license = "MIT OR Apache-2.0"
+keywords = ["torus"]
+
+[dependencies]
+argh = "0.1.4"
+bevy = "0.5.0"
+rand = "0.8.3"
+rand_distr = "0.4.0"
