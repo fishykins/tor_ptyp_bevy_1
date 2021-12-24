@@ -8,6 +8,9 @@ keywords = ["torus"]
 
 [dependencies]
 argh = "0.1.4"
-bevy = "0.5.0"
+bevy = { version = "0.5.0" }
+bevy_asset_loader = { version = "0.6.0" }
+bevy_kira_audio = { version = "0.6.0" }
 rand = "0.8.3"
 rand_distr = "0.4.0"
+tor_core = { path = "../tor_core" }
