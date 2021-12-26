@@ -3519,7 +3519,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "tor_client"
+name = "tor_ptyp_bevy_1"
 version = "0.1.0"
 dependencies = [
  "argh",
@@ -3529,32 +3529,7 @@ dependencies = [
  "bevy_networking_turbulence",
  "rand 0.8.4",
  "rand_distr",
- "tor_core",
-]
-
-[[package]]
-name = "tor_core"
-version = "0.1.0"
-dependencies = [
- "argh",
- "bevy",
- "rand 0.8.4",
- "rand_distr",
-]
-
-[[package]]
-name = "tor_ptyp_bevy_1"
-version = "0.1.0"
-
-[[package]]
-name = "tor_server"
-version = "0.1.0"
-dependencies = [
- "argh",
- "bevy",
- "bevy_networking_turbulence",
- "rand 0.8.4",
- "rand_distr",
+ "serde",
 ]
 
 [[package]]
