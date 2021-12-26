@@ -1,9 +1,16 @@
-use crate::{network::{ClientMessage, GameStateMessage}, core::components::Agent};
+use crate::{
+    core::components::Agent,
+    network::{ClientMessage, GameStateMessage},
+};
 use bevy::{log, prelude::*};
 use bevy_networking_turbulence::NetworkResource;
 use rand::Rng;
 
-pub(crate) fn handle_messages(mut net: ResMut<NetworkResource>, mut commands: Commands) {
+pub(crate) fn handle_messages(
+    mut net: ResMut<NetworkResource>,
+    mut commands: Commands,
+    mut agents: Query<(&Agent, &mut Transform)>,
+) {
     for (handle, connection) in net.connections.iter_mut() {
         let channels = connection.channels().unwrap();
         while let Some(client_message) = channels.recv::<ClientMessage>() {
@@ -25,6 +32,17 @@ pub(crate) fn handle_messages(mut net: ResMut<NetworkResource>, mut commands: Co
                         },
                         Transform::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
                     ));
+                }
+                ClientMessage::Input(input) => {
+                    for (agent, mut transform) in agents.iter_mut() {
+                        if agent.controller == *handle {
+                            match input.0 {
+                                crate::core::input::Movement::Forward => transform.translation.y += input.1,
+                                crate::core::input::Movement::Right => transform.translation.x += input.1,
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         }

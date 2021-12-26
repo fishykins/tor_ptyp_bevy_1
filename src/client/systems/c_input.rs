@@ -6,60 +6,35 @@ use bevy_advanced_input::{
     input_id::InputId,
     user_input::{InputAxisType, MouseAxisType, UserInputHandle, UserInputSet},
 };
-
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub(crate) enum InputType {
-    Editor,
-}
-
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub(crate) enum Bindings {
-    Hotkeys(HotkeysInput),
-    Movement(MovementInput),
-    Camera(CameraInput),
-}
-
-#[derive(PartialEq, Eq, Hash, Clone, Copy)] 
-pub(crate) enum MovementInput {
-    Forward,
-    Right,
-}
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub(crate) enum CameraInput {
-    Yaw,
-    Pitch,
-}
-
-#[derive(PartialEq, Eq, Hash, Clone, Copy)]
-pub(crate) enum HotkeysInput {
-    Test,
-}
+use bevy_networking_turbulence::NetworkResource;
+use crate::{core::input::*, network::ClientMessage};
 
 pub(crate) fn handle_input(
+    mut net: ResMut<NetworkResource>,
     input_bindings: Res<UserInputHandle<InputType, Bindings>>,
     query: Query<&InputId>,
 ) {
     query.for_each_mut(|input_component| {
         if let Some(input_handle) = input_bindings.to_handle(input_component) {
             if let Some(value) =
-                input_handle.get_axis_value(Bindings::Movement(MovementInput::Right))
+                input_handle.get_axis_value(Bindings::Movement(Movement::Right))
             {
-                println!("Right: {}", value);
+                net.broadcast_message(ClientMessage::Input(MovementWrapper(
+                    Movement::Right,
+                    value,
+                )));
             }
 
             if let Some(value) =
-                input_handle.get_axis_value(Bindings::Movement(MovementInput::Forward))
+                input_handle.get_axis_value(Bindings::Movement(Movement::Forward))
             {
-                println!("Forward: {}", value);
+                net.broadcast_message(ClientMessage::Input(MovementWrapper(
+                    Movement::Forward,
+                    value,
+                )));
             }
 
-            if let Some(value) = input_handle.get_axis_value(Bindings::Camera(CameraInput::Yaw)) {
-                println!("Yaw: {}", value);
-            }
-            if let Some(value) = input_handle.get_axis_value(Bindings::Camera(CameraInput::Pitch)) {
-                println!("Pitch: {}", value);
-            }
-            if let Some(value) = input_handle.get_key_state(Bindings::Hotkeys(HotkeysInput::Test)) {
+            if let Some(value) = input_handle.get_key_state(Bindings::Hotkeys(Hotkeys::Test)) {
                 println!("Test: {:?}", value);
             }
         }
@@ -73,29 +48,29 @@ pub(crate) fn input_startup(mut input_bindings: ResMut<UserInputHandle<InputType
 
     let mut set = UserInputSet::new();
 
-    set.begin_key(Bindings::Hotkeys(HotkeysInput::Test))
+    set.begin_key(Bindings::Hotkeys(Hotkeys::Test))
         .add(&[
             InputAxisType::KeyboardButton(KeyCode::Q),
             InputAxisType::KeyboardButton(KeyCode::W),
         ])
         .enable_repeat_all_for_reactivation();
 
-    set.begin_axis(Bindings::Movement(MovementInput::Forward))
+    set.begin_axis(Bindings::Movement(Movement::Forward))
         .add(InputAxisType::KeyboardButton(KeyCode::W))
         .add(InputAxisType::KeyboardButton(KeyCode::S))
         .add(InputAxisType::GamepadAxis(GamepadAxisType::LeftStickY));
 
-    set.begin_axis(Bindings::Movement(MovementInput::Right))
+    set.begin_axis(Bindings::Movement(Movement::Right))
         .add(InputAxisType::KeyboardButton(KeyCode::A))
         .add(InputAxisType::KeyboardButton(KeyCode::D))
         .add(InputAxisType::GamepadAxis(GamepadAxisType::LeftStickX));
 
 
-    set.begin_axis(Bindings::Camera(CameraInput::Yaw))
+    set.begin_axis(Bindings::Camera(Camera::Yaw))
         .add(InputAxisType::MouseAxisDiff(MouseAxisType::X))
         .add(InputAxisType::GamepadAxis(GamepadAxisType::RightStickX));
 
-    set.begin_axis(Bindings::Camera(CameraInput::Pitch))
+    set.begin_axis(Bindings::Camera(Camera::Pitch))
         .add(InputAxisType::MouseAxisDiff(MouseAxisType::Y))
         .add(InputAxisType::GamepadAxis(GamepadAxisType::RightStickY));
 

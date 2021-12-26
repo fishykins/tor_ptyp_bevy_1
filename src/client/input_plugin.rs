@@ -1,3 +1,5 @@
+use crate::core::input::{InputType, Bindings};
+
 use super::systems::*;
 use bevy::prelude::*;
 use bevy_advanced_input::plugin::InputBindingPlugin;

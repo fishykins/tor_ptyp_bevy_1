@@ -51,7 +51,7 @@ pub(crate) fn handle_messages(
                     // TODO: despawn disconnected agents
                 }
             }
-            // create new balls
+            // create new agents
             for (id, translation) in state_message.agents.drain(..) {
                 if let Some((frame, _translation)) = to_spawn.get(&id) {
                     if *frame > message_frame {
