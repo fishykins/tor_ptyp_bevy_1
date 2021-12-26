@@ -1,5 +1,3 @@
 #[allow(dead_code)]
 /// A component that represents a network-enabled world entity
-pub struct Agent {
-    pub controller: u32
-}
+pub struct Goon;

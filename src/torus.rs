@@ -7,6 +7,7 @@ use bevy::MinimalPlugins;
 use super::client::ClientPlugin;
 use super::network::NetworkPlugin;
 use super::server::ServerPlugin;
+use crate::client::InputPlugin;
 use crate::core::{resources::Session, CorePlugin};
 use std::time::Duration;
 
@@ -58,6 +59,7 @@ impl Plugin for TorusPlugin {
         if session.is_client() {
             println!("Setting up a client...");
             app.add_plugin(ClientPlugin::default());
+            app.add_plugin(InputPlugin::default());
         }
 
 

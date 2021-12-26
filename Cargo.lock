@@ -281,6 +281,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d5f2f58f0aec3c50a20799792c3705e80dd7df327e79791cacec197e84e5e61"
 
 [[package]]
+name = "bevy_advanced_input"
+version = "0.2.0"
+source = "git+https://github.com/sadpython/bevy_advanced_input.git?branch=main#558e0a8e8c7d406cc67e174c8fa57d10abb32abd"
+dependencies = [
+ "bevy",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "bevy_app"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -491,6 +501,7 @@ dependencies = [
  "bevy_ecs",
  "bevy_math",
  "bevy_utils",
+ "serde",
 ]
 
 [[package]]
@@ -3524,6 +3535,7 @@ version = "0.1.0"
 dependencies = [
  "argh",
  "bevy",
+ "bevy_advanced_input",
  "bevy_asset_loader",
  "bevy_kira_audio",
  "bevy_networking_turbulence",
