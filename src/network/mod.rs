@@ -1,4 +1,3 @@
-mod net_packets;
 mod net_plugin;
 mod net_messages;
 

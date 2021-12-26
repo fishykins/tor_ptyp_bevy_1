@@ -68,6 +68,10 @@ impl Display for SessionType {
 
 impl Display for Session {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}", self.session_type, self.port)
+        if self.is_headless() {
+            write!(f, "{}:{} (headless), t = {}", self.session_type, self.port, self.tickrate)
+        } else {
+            write!(f, "{}:{}, t = {}", self.session_type, self.port, self.tickrate)
+        }
     }
 }
