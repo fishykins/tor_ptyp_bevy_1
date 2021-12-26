@@ -1,20 +1,18 @@
-use bevy::app::{ScheduleRunnerSettings, ScheduleRunnerPlugin};
+use bevy::app::{ScheduleRunnerPlugin, ScheduleRunnerSettings};
 use bevy::diagnostic::{DiagnosticsPlugin, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::MinimalPlugins;
 
 use super::client::ClientPlugin;
-use super::network::NetworkPlugin;
 use super::server::ServerPlugin;
 use crate::client::InputPlugin;
-use crate::core::{resources::Session, CorePlugin};
+use crate::core::{network::NetworkPlugin, resources::Session, CorePlugin};
 use std::time::Duration;
 
 #[derive(Default)]
 /// The main plugin for Torus. This is the entry point for the Torus application, and will determine which plugins to load based on the session type.
 pub struct TorusPlugin;
-
 
 impl Plugin for TorusPlugin {
     fn build(&self, app: &mut AppBuilder) {
@@ -46,7 +44,6 @@ impl Plugin for TorusPlugin {
                 .add_plugins(DefaultPlugins);
         }
 
-        
         app.add_plugin(NetworkPlugin::default());
         app.add_plugin(CorePlugin::default());
 
@@ -61,7 +58,6 @@ impl Plugin for TorusPlugin {
             app.add_plugin(ClientPlugin::default());
             app.add_plugin(InputPlugin::default());
         }
-
 
         if session.debug {
             app.add_plugin(FrameTimeDiagnosticsPlugin::default());

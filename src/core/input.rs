@@ -1,6 +1,5 @@
 use serde::{Serialize, Deserialize};
 
-
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]
 pub(crate) enum InputType {
     Editor,

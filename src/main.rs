@@ -3,7 +3,6 @@
 
 mod client;
 mod core;
-mod network;
 mod server;
 mod torus;
 

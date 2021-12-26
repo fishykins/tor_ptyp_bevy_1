@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use bevy::{prelude::*, log};
 use bevy_networking_turbulence::NetworkResource;
 
-use crate::{core::components::Agent, network::{ClientMessage, GameStateMessage}};
+use crate::{core::{components::Agent, network::{ClientMessage, GameStateMessage}}};
 use super::ServerIds;
 
 pub(crate) fn handle_messages(
@@ -73,7 +73,7 @@ pub(crate) fn handle_messages(
                     sprite: Sprite::new(Vec2::new(30.0, 30.0)),
                     ..Default::default()
                 })
-                .insert(Agent { controller: *id })
+                .insert(Agent { owner: *id })
                 .id();
             server_ids.insert(entity.id(), (*id, *frame));
         }

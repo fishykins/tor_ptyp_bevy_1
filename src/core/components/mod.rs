@@ -1,5 +1,5 @@
-mod player;
 mod agent;
+mod controller;
 
-pub use player::Player;
 pub use agent::Agent;
+pub use controller::Controller;

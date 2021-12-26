@@ -1,7 +1,7 @@
-mod s_init;
-mod s_broadcast;
-mod s_messages;
+mod init;
+mod broadcast;
+mod messages;
 
-pub(crate) use s_init::*;
-pub(crate) use s_broadcast::*;
-pub(crate) use s_messages::*;
+pub(crate) use init::*;
+pub(crate) use broadcast::*;
+pub(crate) use messages::*;

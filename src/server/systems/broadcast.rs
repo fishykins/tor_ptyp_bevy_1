@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
 
-use crate::{network::{GameStateMessage, Broadcast}, core::components::Agent};
+use crate::{core::network::{GameStateMessage, Broadcast}, core::components::Agent};
 
 pub(crate) fn broadcast_agents(
     mut state: ResMut<Broadcast>,

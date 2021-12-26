@@ -1,5 +1,6 @@
 #[allow(dead_code)]
-/// A component that represents a network-enabled world entity
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// A component that represents a player-owned entity. 
 pub struct Agent {
-    pub controller: u32
+    pub owner: u32
 }

@@ -1,4 +1,4 @@
-use crate::network::Broadcast;
+use crate::core::network::Broadcast;
 use bevy::prelude::*;
 
 use super::systems::{network_init, handle_messages, broadcast_agents};

@@ -1,7 +1,7 @@
 use bevy::{log, prelude::*};
 use bevy_networking_turbulence::{NetworkEvent, NetworkResource};
 
-use crate::network::ClientMessage;
+use crate::core::network::ClientMessage;
 
 pub(crate) fn handle_packets(
     mut net: ResMut<NetworkResource>,
