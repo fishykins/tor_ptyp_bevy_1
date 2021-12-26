@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ClientMessage {
-    Text(String),
+    Handshake(String),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
