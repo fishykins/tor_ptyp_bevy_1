@@ -5,10 +5,13 @@ use bevy_networking_turbulence::{
     NetworkEvent, NetworkResource, NetworkingPlugin as TurbulenceNetPlugin,
 };
 
-use crate::{core::{
-    network::{ClientRequest, ServerResponse},
-    Session,
-}, server::players::PlayerBundle};
+use crate::{
+    core::{
+        network::{ClientRequest, ServerResponse},
+        Session,
+    },
+    server::players::PlayerBundle,
+};
 
 // ===============================================================
 // ===================== CORE NETWORKING =========================
@@ -61,7 +64,10 @@ fn handle_packets(mut net: ResMut<NetworkResource>, mut network_events: EventRea
             },
             NetworkEvent::Disconnected(handle) => {
                 log::info!("[{}] has dissconnected.", handle);
-            },
+            }
+            NetworkEvent::Error(handle, error) => {
+                log::error!("Network error on connection [{}]: {:?}", handle, error);
+            }
             _ => {}
         }
     }
@@ -79,18 +85,25 @@ fn handle_messages(mut commands: Commands, mut net: ResMut<NetworkResource>) {
                     commands.spawn_bundle(PlayerBundle::new(*handle));
                     // Send a reply to the client, containing their unique ID.
                     log::info!("Handing id to client [{}]", *handle);
-                    pending_replies.push(ServerResponse::Id(*handle));
+                    pending_replies.push((*handle, ServerResponse::Id(*handle)));
                 }
                 ClientRequest::Spawn => {
                     log::info!("Sending spawn to client [{}]", *handle);
-                    pending_replies.push(ServerResponse::Spawn(Vec2::splat(32.0)));
+                    pending_replies.push((*handle, ServerResponse::Spawn(Vec2::splat(32.0))));
                 }
             }
         }
     }
-
-    // Send pending messages
     for message in pending_replies {
-        net.broadcast_message(message);
+        match net.send_message(message.0, message.1) {
+            Ok(_) => {}
+            Err(error) => {
+                log::error!("Error sending message to client [{}]: {:?}", message.0, error);
+            }
+        }
     }
 }
+
+// ===============================================================
+// ======================== RESOURCES ============================
+// ===============================================================

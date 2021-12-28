@@ -6,8 +6,10 @@ use bevy_networking_turbulence::{
 };
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
+use std::ops::DerefMut;
 use std::time::Duration;
 
+use super::GameTick;
 use super::components::ServerData;
 
 // ===============================================================
@@ -20,8 +22,14 @@ pub struct CoreNetworkPlugin;
 
 impl Plugin for CoreNetworkPlugin {
     fn build(&self, app: &mut bevy::prelude::AppBuilder) {
-        app.add_plugin(TurbulenceNetPlugin::default())
-            .add_startup_system(setup.system());
+        let net_plugin = TurbulenceNetPlugin::default();
+        //net_plugin.idle_timeout_ms = Some(5000);
+        //net_plugin.auto_heartbeat_ms = Some(2000);
+
+        app.add_plugin(net_plugin)
+            .insert_resource(GameTick::default())
+            .add_startup_system(setup.system())
+            .add_system_to_stage(CoreStage::Last, update.system());
     }
 }
 
@@ -45,6 +53,10 @@ pub fn setup(mut net: ResMut<NetworkResource>) {
             .register::<ServerResponse>(SERVER_RESPONSE_SETTINGS)
             .unwrap();
     });
+}
+
+pub fn update(mut game_tick: ResMut<GameTick>) {
+    game_tick.deref_mut().next();
 }
 
 // ===============================================================
@@ -82,7 +94,9 @@ pub enum ClientRequest {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum ServerMessage {}
+pub enum ServerMessage {
+    GoonState(GoonUpdateMessage)
+}
 
 /// A response to a specific client's request.
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -91,17 +105,12 @@ pub enum ServerResponse {
     Spawn(Vec2),
 }
 
-#[derive(Default)]
-pub struct Broadcast {
-    pub frame: u32,
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct AgentStateMessage {
-    pub frame: u32,
-    pub agents: Vec<(u32, Vec2)>,
+pub struct GoonUpdateMessage {
+    pub frame: u64,
+    // agent id, position
+    pub goons: Vec<(u32, Vec2)>,
 }
-
 // ===============================================================
 // ======================== CHANNELS =============================
 // ===============================================================

@@ -4,7 +4,7 @@ use bevy::{log, prelude::*};
 use bevy_networking_turbulence::{NetworkEvent, NetworkResource};
 
 use crate::core::{
-    network::{ClientId, ClientRequest, ServerResponse},
+    network::{ClientId, ClientRequest, ServerResponse, ServerMessage},
     Session,
 };
 
@@ -80,6 +80,13 @@ fn handle_messages(
                 }
                 ServerResponse::Spawn(spawn) => {
                     log::info!("Spawning data: {}", spawn);
+                }
+            }
+        }
+        while let Some(msg) = channels.recv::<ServerMessage>() {
+            match msg {
+                ServerMessage::GoonState(goons) => {
+                    commands.insert_resource(goons);
                 }
             }
         }

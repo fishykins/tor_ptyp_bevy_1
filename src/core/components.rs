@@ -30,3 +30,18 @@ impl<T> Default for ServerData<T> where T: Serialize + Clone + PartialEq + Defau
 pub struct Controller{
     pub movement: Movement,
 }
+
+/// A component that implies ownership of an entity. 
+#[derive(Debug, Clone)]
+pub struct Goon {
+    owner: u32
+}
+
+impl Goon {
+    pub fn new(owner: u32) -> Self {
+        Goon { owner }
+    }
+    pub fn owner(&self) -> u32 {
+        self.owner
+    }
+}
