@@ -1,7 +1,7 @@
 use crate::{
     core::{
-        components::Agent,
-        network::{ClientMessage, GameStateMessage},
+        //components::{Agent, Controller},
+        network::{ClientMessage, ServerMessage},
     },
     server::bundles::PlayerBundle,
 };
@@ -12,8 +12,10 @@ use rand::Rng;
 pub(crate) fn handle_messages(
     mut net: ResMut<NetworkResource>,
     mut commands: Commands,
-    mut agents: Query<(&Agent, &mut Transform)>,
+    //mut agents: Query<(&Agent, &mut Controller)>,
 ) {
+    let mut pending_messages = Vec::new();
+
     for (handle, connection) in net.connections.iter_mut() {
         let channels = connection.channels().unwrap();
         while let Some(client_message) = channels.recv::<ClientMessage>() {
@@ -30,26 +32,26 @@ pub(crate) fn handle_messages(
                     let pos_y = rng.gen_range(0..400) as f32;
                     log::info!("Spawning agent {} at [{},{}]", *handle, pos_x, pos_y);
                     commands.spawn_bundle(PlayerBundle::new(*handle, Vec2::new(pos_x, pos_y)));
+                    pending_messages.push((*handle, ServerMessage::Handshake((*handle, "Welcome".to_string()))));
+
                 }
-                ClientMessage::Input(input) => {
-                    for (agent, mut transform) in agents.iter_mut() {
-                        if agent.owner == *handle {
-                            match input.0 {
-                                crate::core::input::Movement::Forward => {
-                                    transform.translation.y += input.1
-                                }
-                                crate::core::input::Movement::Right => {
-                                    transform.translation.x += input.1
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
+                // ClientMessage::Movement(movement) => {
+                //     for (agent, mut controller) in agents.iter_mut() {
+                //         if agent.owner == *handle {
+                //             controller.movement = movement;
+                //             log::info!("Client [{}] sent a movement message", *handle);
+                //             break;
+                //         }
+                //     }
+                // }
             }
         }
-        while let Some(_state_message) = channels.recv::<GameStateMessage>() {
-            log::error!("GameStateMessage received on [{}]", handle);
+    }
+
+    for (handle, message) in pending_messages {
+        match net.send_message(handle, message) {
+            Ok(_) => {},
+            Err(e) => log::error!("Failed to send message to [{}]: {}", handle, e),
         }
     }
 }

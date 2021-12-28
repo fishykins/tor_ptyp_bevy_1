@@ -22,9 +22,9 @@ pub struct Session {
 }
 
 impl Session {
-    pub fn new(session_type: SessionType, port: u16, debug: bool, tickrate: f64) -> Self {
+    pub fn new(is_server: bool, is_client: bool, port: u16, debug: bool, tickrate: f64) -> Self {
         Self {
-            session_type,
+            session_type: get_session_type(is_server, is_client),
             port,
             debug,
             tickrate,
@@ -44,7 +44,7 @@ impl Session {
     }
 }
 
-pub fn get_session_type(is_server: bool, is_client: bool) -> SessionType {
+fn get_session_type(is_server: bool, is_client: bool) -> SessionType {
     if is_server && is_client {
         return SessionType::Host;
     } else if is_server && !is_client {

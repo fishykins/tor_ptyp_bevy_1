@@ -10,7 +10,7 @@ use argh::FromArgs;
 use bevy::prelude::*;
 use torus::TorusPlugin;
 
-use crate::core::resources::{get_session_type, Session};
+use crate::core::Session;
 
 #[derive(FromArgs)]
 /// A server application to host the game "Torus"
@@ -40,7 +40,8 @@ fn main() {
     // We are only going to parse startup arguments, the rest we will leave up to the official Torus plugin.
     let args: Flags = argh::from_env();
     let s = Session::new(
-        get_session_type(args.server, args.client),
+        args.server,
+        args.client,
         args.port,
         args.debug,
         args.tickrate,

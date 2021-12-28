@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
 
-use crate::{core::network::{GameStateMessage, Broadcast}, core::components::Agent};
+use crate::{core::network::{AgentStateMessage, Broadcast}, core::components::Agent};
 
 pub(crate) fn broadcast_agents(
     mut state: ResMut<Broadcast>,
     mut net: ResMut<NetworkResource>,
     agent_query: Query<(Entity, &Transform), With<Agent>>,
 ) {
-    let mut message = GameStateMessage {
+    let mut message = AgentStateMessage {
         frame: state.frame,
         agents: Vec::new(),
     };

@@ -4,10 +4,9 @@ use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::MinimalPlugins;
 
-use super::client::ClientPlugin;
-use super::server::ServerPlugin;
-use crate::client::InputPlugin;
-use crate::core::{network::NetworkPlugin, resources::Session, CorePlugin};
+use super::client::ClientPlugins;
+use super::server::ServerPlugins;
+use crate::core::{Session, CorePlugins};
 use std::time::Duration;
 
 #[derive(Default)]
@@ -31,7 +30,7 @@ impl Plugin for TorusPlugin {
                 .add_plugin(DiagnosticsPlugin::default())
                 .add_plugin(LogPlugin::default());
         }
-        // App has a client, so run a window and rendering proccesses
+        // App has an interface, so run window and rendering proccesses
         else {
             app.insert_resource(Msaa { samples: 4 })
                 .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
@@ -44,19 +43,15 @@ impl Plugin for TorusPlugin {
                 .add_plugins(DefaultPlugins);
         }
 
-        app.add_plugin(NetworkPlugin::default());
-        app.add_plugin(CorePlugin::default());
+        app.add_plugins(CorePlugins::default());
 
         // True if either dedicated server, or client who is hosting.
         if session.is_server() {
-            println!("Setting up a server...");
-            app.add_plugin(ServerPlugin::default());
+            app.add_plugins(ServerPlugins::default());
         }
 
         if session.is_client() {
-            println!("Setting up a client...");
-            app.add_plugin(ClientPlugin::default());
-            app.add_plugin(InputPlugin::default());
+            app.add_plugins(ClientPlugins::default());
         }
 
         if session.debug {
