@@ -63,12 +63,15 @@ pub fn update(mut game_tick: ResMut<GameTick>) {
 // ======================= RESOURCES =============================
 // ===============================================================
 
-#[derive(Default, Serialize, Deserialize, Debug, Clone)]
+#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct ClientId(pub ServerData<u32>);
 
 impl ClientId {
     pub fn new(id: u32) -> Self {
         ClientId(ServerData::Acquired(id))
+    }
+    pub fn is_equal(&self, i: u32) -> bool {
+        self.0 == ServerData::Acquired(i)
     }
 }
 

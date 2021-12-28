@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::{prelude::*, log};
 
-use crate::core::{components::Goon, network::GoonUpdateMessage};
+use crate::core::{components::Goon, network::{GoonUpdateMessage, ClientId}};
 
 // ===============================================================
 // ====================== CLIENT NETWORKING ======================
@@ -24,6 +24,7 @@ impl Plugin for ClientPlayerPlugin {
 
 fn update_players(
     broadcast: Option<ResMut<GoonUpdateMessage>>,
+    client_id: Res<ClientId>,
     mut commands: Commands,
     mut query: Query<(&mut Transform, &Goon)>,
     mut materials: ResMut<Assets<ColorMaterial>>,
@@ -50,7 +51,7 @@ fn update_players(
 
         for (id, translation) in to_spawn {
             log::info!("Spawning player {}", id);
-            commands
+            let mut entity = commands
                 .spawn_bundle(SpriteBundle {
                     material: materials.add(
                         Color::rgb(0.8 - (id as f32 / 5.0), 0.2, 0.2 + (id as f32 / 5.0)).into(),
@@ -58,8 +59,11 @@ fn update_players(
                     transform: Transform::from_translation(translation),
                     sprite: Sprite::new(Vec2::new(30.0, 30.0)),
                     ..Default::default()
-                })
-                .insert(Goon::new(id));
+                });
+                entity.insert(Goon::new(id));
+            if client_id.is_equal(id) {
+                entity.insert(Player::default());
+            }
         }
     }
 }
@@ -67,6 +71,8 @@ fn update_players(
 // ===============================================================
 // ======================= COMPONENTS ============================
 // ===============================================================
+#[derive(Debug, Default)]
+pub struct Player {}
 
 // ===============================================================
 // ======================== RESOURCES ============================

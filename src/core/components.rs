@@ -1,21 +1,26 @@
-use serde::{Serialize, Deserialize};
-
-use super::input::Movement;
+use bevy::math::Vec2;
+use serde::{Deserialize, Serialize};
 
 // ===============================================================
 // ========================= HELPERS =============================
 // ===============================================================
 
-/// Something that is held client side and is sent from the server. 
+/// Something that is held client side and is sent from the server.
 /// This helps keep track of where we are at when it comes to acquiring the wrapped item.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-pub enum ServerData<T> where T: Serialize + Clone + PartialEq + Default {
+pub enum ServerData<T>
+where
+    T: Serialize + Clone + PartialEq + Default,
+{
     Acquired(T),
     Waiting(u32),
     None,
 }
 
-impl<T> Default for ServerData<T> where T: Serialize + Clone + PartialEq + Default {
+impl<T> Default for ServerData<T>
+where
+    T: Serialize + Clone + PartialEq + Default,
+{
     fn default() -> Self {
         ServerData::None
     }
@@ -26,15 +31,17 @@ impl<T> Default for ServerData<T> where T: Serialize + Clone + PartialEq + Defau
 // ===============================================================
 
 /// Any entity that has movement logic, be it AI or player, should have this component.
-#[derive(Default, Clone, Debug)]
-pub struct Controller{
-    pub movement: Movement,
+#[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub struct Controller {
+    pub forward: f32,
+    pub lateral: f32,
+    pub target: Vec2,
 }
 
-/// A component that implies ownership of an entity. 
+/// A component that implies ownership of an entity.
 #[derive(Debug, Clone)]
 pub struct Goon {
-    owner: u32
+    owner: u32,
 }
 
 impl Goon {
