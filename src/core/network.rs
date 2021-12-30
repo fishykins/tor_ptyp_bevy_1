@@ -10,7 +10,7 @@ use std::ops::DerefMut;
 use std::time::Duration;
 
 use super::GameTick;
-use super::components::ServerData;
+use super::components::{ServerData, Controller};
 
 // ===============================================================
 // ===================== CORE NETWORKING =========================
@@ -87,7 +87,9 @@ impl Display for ClientId {
 
 /// Client FYI broadcasts, such as input data.
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum ClientMessage {}
+pub enum ClientMessage {
+    Input(Controller),
+}
 
 /// Client requests that require server response.
 #[derive(Serialize, Deserialize, Debug, Clone)]

@@ -29,7 +29,6 @@ where
 // ===============================================================
 // ========================== COMPONENTS =========================
 // ===============================================================
-
 /// Any entity that has movement logic, be it AI or player, should have this component.
 #[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Controller {
