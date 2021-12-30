@@ -1,13 +1,13 @@
-use std::{net::SocketAddr};
+use std::net::SocketAddr;
 
 use bevy::{log, prelude::*};
 use bevy_networking_turbulence::{NetworkEvent, NetworkResource};
 
 use crate::core::{
-    network::{ClientId, ClientRequest, ServerResponse, ServerMessage},
+    components::Controller,
+    network::{ClientId, ClientMessage, ClientRequest, ServerMessage, ServerResponse},
     Session,
 };
-
 
 // ===============================================================
 // ====================== CLIENT NETWORKING ======================
@@ -20,8 +20,9 @@ pub(crate) struct ClientNetworkPlugin;
 impl Plugin for ClientNetworkPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_system(startup.system())
-            .add_system(handle_packets.system())
-            .add_system(handle_messages.system())
+            .add_system_to_stage(CoreStage::PreUpdate, handle_events.system())
+            .add_system_to_stage(CoreStage::PreUpdate, handle_messages.system())
+            .add_system_to_stage(CoreStage::PostUpdate, relay_controls.system())
             .insert_resource(ClientId::default());
     }
 }
@@ -39,7 +40,7 @@ fn startup(mut net: ResMut<NetworkResource>, session: ResMut<Session>) {
     info!("Connecting to {}...", socket_address);
 }
 
-fn handle_packets(mut net: ResMut<NetworkResource>, mut network_events: EventReader<NetworkEvent>) {
+fn handle_events(mut net: ResMut<NetworkResource>, mut network_events: EventReader<NetworkEvent>) {
     for event in network_events.iter() {
         match event {
             NetworkEvent::Connected(handle) => match net.connections.get_mut(handle) {
@@ -66,10 +67,7 @@ fn handle_packets(mut net: ResMut<NetworkResource>, mut network_events: EventRea
 }
 
 /// Handles explicit messages sent from server..
-fn handle_messages(
-    mut net: ResMut<NetworkResource>,
-    mut commands: Commands,
-) {
+fn handle_messages(mut net: ResMut<NetworkResource>, mut commands: Commands) {
     for (_, connection) in net.connections.iter_mut() {
         let channels = connection.channels().unwrap();
         while let Some(msg) = channels.recv::<ServerResponse>() {
@@ -86,10 +84,18 @@ fn handle_messages(
         while let Some(msg) = channels.recv::<ServerMessage>() {
             match msg {
                 ServerMessage::GoonState(goons) => {
+                    //log::info!("Got goon state: {:?}", goons);
                     commands.insert_resource(goons);
                 }
             }
         }
+    }
+}
+
+fn relay_controls(mut net: ResMut<NetworkResource>, controller: Query<&Controller>) {
+    for controller in controller.iter() {
+        net.broadcast_message(ClientMessage::Input(controller.clone()));
+        //log::info!("Sending input: {:?}", controller);
     }
 }
 

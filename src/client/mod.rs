@@ -15,5 +15,6 @@ impl PluginGroup for ClientPlugins {
         group.add(network::ClientNetworkPlugin::default());
         group.add(interface::ClientInterfacePlugin::default());
         group.add(player::ClientPlayerPlugin::default());
+        group.add(input::ClientInputPlugin::default());
     }
 }
