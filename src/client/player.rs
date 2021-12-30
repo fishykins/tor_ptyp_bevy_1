@@ -5,7 +5,7 @@ use bevy::{log, prelude::*};
 use crate::core::{
     components::{Controller, Goon},
     network::{ClientId, GoonUpdateMessage},
-    players::PLAYER_SPEED,
+    players::{GBodyLocal, GBodyRemote},
     GameTick,
 };
 
@@ -27,16 +27,11 @@ impl Plugin for ClientPlayerPlugin {
         )
         .add_system_to_stage(
             CoreStage::Update,
-            update_player_local
-                .system()
-                .label("update_player_local")
-                .before("update_player_transforms"),
-        )
-        .add_system_to_stage(
-            CoreStage::Update,
             update_player_transforms
                 .system()
-                .label("update_player_transforms"),
+                .label("update_player_transforms")
+                .after("update_player_local")
+                .after("update_player_remote"),
         );
     }
 }
@@ -89,23 +84,8 @@ fn update_player_remote(
                 entity
                     .insert(Player::default())
                     .insert(Controller::default())
-                    .insert(GBodyLocal::default());
+                    .insert(GBodyLocal::from_translation(translation));
             }
-        }
-    }
-}
-
-/// Updates local gbody positions based on controller input. This is purely speculative, and will have no effect on the server predictions.
-fn update_player_local(
-    time: Res<Time>,
-    mut query: Query<(&Controller, &mut GBodyLocal), With<Player>>,
-) {
-    for (controller, mut gbody_local) in query.iter_mut() {
-        if controller.forward != 0.0 || controller.lateral != 0.0 {
-            let step_move = Vec3::new(controller.lateral, controller.forward, 0.0).normalize()
-                * time.delta_seconds()
-                * PLAYER_SPEED;
-            gbody_local.translation += step_move;
         }
     }
 }
@@ -123,10 +103,13 @@ fn update_player_transforms(
                 target_translation = gbody_local.translation;
             } else {
                 // All is well, check for local discrepancies.
-                let dist = gbody_local.translation.distance_squared(gbody_remote.translation);
+                let dist = gbody_local
+                    .translation
+                    .distance_squared(gbody_remote.translation);
                 if dist > 1.0 {
                     // Smoothly interpolate towards the correct position.
-                    target_translation = Vec3::lerp(gbody_local.translation, gbody_remote.translation, 0.3);
+                    target_translation =
+                        Vec3::lerp(gbody_local.translation, gbody_remote.translation, 0.3);
                     log::debug!("Interpolating ({})", dist);
                 } else {
                     target_translation = gbody_remote.translation;
@@ -144,19 +127,6 @@ fn update_player_transforms(
 /// A simple tag to help identify our player quickly.
 #[derive(Debug, Default)]
 pub struct Player {}
-
-/// A local representation of a goon's body and where we think it is. No one else cares about this.
-#[derive(Debug, Default)]
-pub struct GBodyLocal {
-    pub translation: Vec3,
-}
-
-/// This is the authoritative representation of the goon's body, and represents exactly where the server thinks it is.
-#[derive(Debug, Default)]
-pub struct GBodyRemote {
-    pub tick: u64,
-    pub translation: Vec3,
-}
 
 // ===============================================================
 // ======================== RESOURCES ============================

@@ -1,6 +1,7 @@
 use crate::core::{
     components::{Controller, Goon},
-    WORLD_SIZE_X, WORLD_SIZE_Y, players::PLAYER_SPEED,
+    players::GBodyLocal,
+    WORLD_SIZE_X, WORLD_SIZE_Y,
 };
 use bevy::prelude::*;
 use rand::Rng;
@@ -15,31 +16,16 @@ pub struct ServerPlayersPlugin;
 
 impl Plugin for ServerPlayersPlugin {
     fn build(&self, app: &mut bevy::prelude::AppBuilder) {
-        app.add_system_to_stage(CoreStage::Update, update_goons.system());
+        app.add_system_to_stage(CoreStage::Update, update_player_transforms.system().label("update_player_transforms"));
     }
 }
 
 // ===============================================================
 // ======================== SYSTEMS ==============================
 // ===============================================================
-fn update_goons(time: Res<Time>, mut query: Query<(&mut Transform, &Controller), With<Goon>>) {
-    for (mut transform, controller) in query.iter_mut() {
-        if controller.forward != 0.0 || controller.lateral != 0.0 {
-            let step_move = Vec3::new(controller.lateral, controller.forward, 0.0).normalize() * time.delta_seconds() * PLAYER_SPEED;
-            transform.translation += step_move;
-        }
-
-        if transform.translation.x > WORLD_SIZE_X {
-            transform.translation.x = 0.1;
-        } else if transform.translation.x < 0.0 {
-            transform.translation.x = WORLD_SIZE_X;
-        }
-
-        if transform.translation.y > WORLD_SIZE_Y {
-            transform.translation.y = 0.1;
-        } else if transform.translation.y < 0.0 {
-            transform.translation.y = WORLD_SIZE_Y;
-        }
+fn update_player_transforms(mut query: Query<(&mut Transform, &GBodyLocal), With<Goon>>) {
+    for (mut transform, gbody) in query.iter_mut() {
+        transform.translation = gbody.translation;
     }
 }
 
@@ -51,6 +37,7 @@ fn update_goons(time: Res<Time>, mut query: Query<(&mut Transform, &Controller),
 pub struct PlayerBundle {
     pub goon: Goon,
     pub transform: Transform,
+    pub gbody: GBodyLocal,
     pub controller: Controller,
 }
 
@@ -63,6 +50,7 @@ impl PlayerBundle {
         Self {
             goon: Goon::new(handle),
             transform: Transform::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
+            gbody: GBodyLocal::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
             controller: Controller::default(),
         }
     }

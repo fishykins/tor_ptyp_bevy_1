@@ -23,6 +23,10 @@ pub struct Flags {
     #[argh(option, short = 'p', default = "14200")]
     pub port: u16,
 
+    /// server remote address
+    #[argh(option, short = 'a')]
+    pub address: Option<String>,
+
     /// enable diagnostics in the console
     #[argh(switch, short = 'd')]
     pub debug: bool,
@@ -42,6 +46,7 @@ fn main() {
     let s = Session::new(
         args.server,
         args.client,
+        args.address,
         args.port,
         args.debug,
         args.tickrate,

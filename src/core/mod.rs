@@ -17,6 +17,7 @@ impl PluginGroup for CorePlugins {
     fn build(&mut self, group: &mut PluginGroupBuilder) {
         log::info!("Building core plugins...");
         group.add(network::CoreNetworkPlugin::default());
+        group.add(players::CorePlayerPlugin::default());
     }
 }
 

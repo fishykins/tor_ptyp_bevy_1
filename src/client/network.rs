@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{net::{SocketAddr, IpAddr}, str::FromStr};
 
 use bevy::{log, prelude::*};
 use bevy_networking_turbulence::{NetworkEvent, NetworkResource};
@@ -31,10 +31,15 @@ impl Plugin for ClientNetworkPlugin {
 // ========================= SYSTEMS =============================
 // ===============================================================
 
-fn startup(mut net: ResMut<NetworkResource>, session: ResMut<Session>) {
+fn startup(mut net: ResMut<NetworkResource>, session: Res<Session>) {
     info!("Starting client...");
-    let ip_address =
-        bevy_networking_turbulence::find_my_ip_address().expect("can't find ip address");
+    let ip_address: IpAddr;
+
+    if session.address.is_none() {
+        ip_address = bevy_networking_turbulence::find_my_ip_address().expect("can't find ip address");
+    } else {
+        ip_address = IpAddr::from_str(&session.clone().address.unwrap()).unwrap();
+    }
     let socket_address = SocketAddr::new(ip_address, session.port);
     net.connect(socket_address);
     info!("Connecting to {}...", socket_address);

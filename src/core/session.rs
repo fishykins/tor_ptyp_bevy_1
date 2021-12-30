@@ -13,18 +13,20 @@ impl Default for SessionType {
     }
 }
 
-#[derive(Default, PartialEq, Clone, Copy)]
+#[derive(Default, PartialEq, Clone)]
 pub struct Session {
     pub session_type: SessionType,
+    pub address: Option<String>,
     pub port: u16,
     pub debug: bool,
     pub tickrate: f64,
 }
 
 impl Session {
-    pub fn new(is_server: bool, is_client: bool, port: u16, debug: bool, tickrate: f64) -> Self {
+    pub fn new(is_server: bool, is_client: bool, address: Option<String>, port: u16, debug: bool, tickrate: f64) -> Self {
         Self {
             session_type: get_session_type(is_server, is_client),
+            address,
             port,
             debug,
             tickrate,
