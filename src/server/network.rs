@@ -125,6 +125,8 @@ fn handle_client_broadcasts(mut net: ResMut<NetworkResource>, mut query: Query<(
         if let Some(remote_controller) = remote_controller {
             controller.forward = remote_controller.forward;
             controller.lateral = remote_controller.lateral;
+            controller.target_direction = remote_controller.target_direction;
+            controller.target = remote_controller.target;
         }
     }
 }

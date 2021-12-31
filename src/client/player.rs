@@ -5,9 +5,11 @@ use bevy::{log, prelude::*};
 use crate::core::{
     components::{Controller, Goon},
     network::{ClientId, GoonUpdateMessage},
-    players::{GBodyLocal, GBodyRemote},
-    GameTick,
+    players::{Biped, GBodyLocal, GBodyRemote},
+    AppState, GameTick,
 };
+
+use super::assets::TextureAssets;
 
 // ===============================================================
 // ====================== CLIENT NETWORKING ======================
@@ -18,20 +20,22 @@ pub(crate) struct ClientPlayerPlugin;
 
 impl Plugin for ClientPlayerPlugin {
     fn build(&self, app: &mut AppBuilder) {
-        app.add_system_to_stage(
+        app.add_system_set_to_stage(
             CoreStage::Update,
-            update_player_remote
-                .system()
-                .label("update_player_remote")
-                .before("update_player_transforms"),
-        )
-        .add_system_to_stage(
-            CoreStage::Update,
-            update_player_transforms
-                .system()
-                .label("update_player_transforms")
-                .after("update_player_local")
-                .after("update_player_remote"),
+            SystemSet::on_update(AppState::InGame)
+                .with_system(
+                    update_player_remote
+                        .system()
+                        .label("update_player_remote")
+                        .before("update_player_transforms"),
+                )
+                .with_system(
+                    update_player_transforms
+                        .system()
+                        .label("update_player_transforms")
+                        .after("update_player_local")
+                        .after("update_player_remote"),
+                ),
         );
     }
 }
@@ -45,21 +49,22 @@ fn update_player_remote(
     broadcast: Option<ResMut<GoonUpdateMessage>>,
     client_id: Res<ClientId>,
     game_tick: Res<GameTick>,
+    textures: Res<TextureAssets>,
     mut commands: Commands,
     mut query: Query<(&mut GBodyRemote, &Goon)>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     if let Some(mut update) = broadcast {
         let mut to_spawn: HashMap<u32, Vec3> = HashMap::new();
-        for (mut gbody_remote, goon) in query.iter_mut() {
+        for (mut remote, goon) in query.iter_mut() {
             if let Some(index) = update
                 .goons
                 .iter()
                 .position(|&update| update.0 == goon.owner())
             {
                 let (_id, translation) = update.goons.remove(index);
-                gbody_remote.translation = Vec3::new(translation.x, translation.y, 0.0);
-                gbody_remote.tick = game_tick.frame();
+                remote.body.translation = Vec3::new(translation.x, translation.y, 0.0);
+                remote.tick = game_tick.frame();
             }
         }
 
@@ -72,14 +77,18 @@ fn update_player_remote(
 
         for (id, translation) in to_spawn {
             log::info!("Spawning player {}", id);
+            let sprite_handle = textures.doddy.clone();
+            let mut transform = Transform::from_translation(translation);
+            transform.scale = Vec3::new(0.5, 0.5, 1.0);
             let mut entity = commands.spawn_bundle(SpriteBundle {
-                material: materials
-                    .add(Color::rgb(0.8 - (id as f32 / 5.0), 0.2, 0.2 + (id as f32 / 5.0)).into()),
-                transform: Transform::from_translation(translation),
-                sprite: Sprite::new(Vec2::new(30.0, 30.0)),
+                material: materials.add(sprite_handle.into()),
+                transform,
                 ..Default::default()
             });
-            entity.insert(Goon::new(id)).insert(GBodyRemote::default());
+            entity
+                .insert(Goon::new(id))
+                .insert(GBodyRemote::default())
+                .insert(Biped::default());
             if client_id.is_equal(id) {
                 entity
                     .insert(Player::default())
@@ -95,29 +104,32 @@ fn update_player_transforms(
     game_tick: Res<GameTick>,
     mut query: Query<(&mut Transform, &GBodyRemote, Option<&mut GBodyLocal>)>,
 ) {
-    for (mut transform, gbody_remote, gbody_local) in query.iter_mut() {
-        let mut target_translation = gbody_remote.translation;
-        if let Some(mut gbody_local) = gbody_local {
-            if game_tick.frame() > gbody_remote.tick {
+    for (mut transform, remote, gbody_local) in query.iter_mut() {
+        let mut target_translation = remote.body.translation;
+        if let Some(mut local) = gbody_local {
+            if game_tick.frame() > remote.tick {
                 // Remote gbody is out of date, interpolate towards local gbody.
-                target_translation = gbody_local.translation;
+                target_translation = local.body.translation;
             } else {
                 // All is well, check for local discrepancies.
-                let dist = gbody_local
+                let dist = local
+                    .body
                     .translation
-                    .distance_squared(gbody_remote.translation);
+                    .distance_squared(remote.body.translation);
                 if dist > 1.0 {
                     // Smoothly interpolate towards the correct position.
                     target_translation =
-                        Vec3::lerp(gbody_local.translation, gbody_remote.translation, 0.3);
+                        Vec3::lerp(local.body.translation, remote.body.translation, 0.3);
                     log::debug!("Interpolating ({})", dist);
                 } else {
-                    target_translation = gbody_remote.translation;
+                    target_translation = remote.body.translation;
                 }
             }
-            gbody_local.translation = target_translation;
+            local.body.translation = target_translation;
+            transform.rotation = Quat::from_rotation_z(local.body.direction);
         }
         transform.translation = target_translation;
+        //log::info!("Player at {:?}", target_translation);
     }
 }
 // ===============================================================

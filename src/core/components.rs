@@ -35,6 +35,7 @@ pub struct Controller {
     pub forward: f32,
     pub lateral: f32,
     pub target: Vec2,
+    pub target_direction: Option<f32>,
 }
 
 /// A component that implies ownership of an entity.

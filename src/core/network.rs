@@ -6,10 +6,7 @@ use bevy_networking_turbulence::{
 };
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
-use std::ops::DerefMut;
 use std::time::Duration;
-
-use super::GameTick;
 use super::components::{ServerData, Controller};
 
 // ===============================================================
@@ -27,9 +24,7 @@ impl Plugin for CoreNetworkPlugin {
         //net_plugin.auto_heartbeat_ms = Some(2000);
 
         app.add_plugin(net_plugin)
-            .insert_resource(GameTick::default())
-            .add_startup_system(setup.system())
-            .add_system_to_stage(CoreStage::Last, update.system());
+            .add_startup_system(setup.system());
     }
 }
 
@@ -53,10 +48,6 @@ pub fn setup(mut net: ResMut<NetworkResource>) {
             .register::<ServerResponse>(SERVER_RESPONSE_SETTINGS)
             .unwrap();
     });
-}
-
-pub fn update(mut game_tick: ResMut<GameTick>) {
-    game_tick.deref_mut().next();
 }
 
 // ===============================================================

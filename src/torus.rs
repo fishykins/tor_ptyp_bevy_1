@@ -4,7 +4,7 @@ use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::MinimalPlugins;
 
-use super::client::ClientPlugins;
+use super::client::ClientPlugin;
 use super::server::ServerPlugins;
 use crate::core::{Session, CorePlugins};
 use std::time::Duration;
@@ -51,7 +51,7 @@ impl Plugin for TorusPlugin {
         }
 
         if session.is_client() {
-            app.add_plugins(ClientPlugins::default());
+            app.add_plugin(ClientPlugin::default());
         }
 
         if session.debug {

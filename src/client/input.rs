@@ -7,6 +7,8 @@ use crate::core::{
     input::{Binding, InputMap},
 };
 
+use super::interface::MousePosition;
+
 // ===========================================================================
 // ================================ INPUT ====================================
 // ===========================================================================
@@ -37,7 +39,11 @@ fn startup(mut input_map: ResMut<InputMap<ControlScheme, f32>>) {
         .bind(ControlScheme::Strafe, Binding::new(KeyCode::A, -1.0));
 }
 
-fn update(input_map: Res<InputMap<ControlScheme, f32>>, mut query: Query<&mut Controller>) {
+fn update(
+    input_map: Res<InputMap<ControlScheme, f32>>,
+    mouse: Res<MousePosition>,
+    mut query: Query<&mut Controller>,
+) {
     let input = input_map.deref();
     let forward = input.active_value(&ControlScheme::Walk);
     let lateral = input.active_value(&ControlScheme::Strafe);
@@ -52,6 +58,19 @@ fn update(input_map: Res<InputMap<ControlScheme, f32>>, mut query: Query<&mut Co
             controller.lateral = lateral.unwrap();
         } else {
             controller.lateral = 0.0;
+        }
+        controller.target = mouse.0;
+
+        if forward.is_some() || lateral.is_some() {
+            let x = -controller.lateral;
+            let y = controller.forward;
+            let mut direction = x.atan2(y);
+            if direction < 0.0 {
+                direction += 2.0 * std::f32::consts::PI;
+            }
+            controller.target_direction = Some(direction);
+        } else {
+            controller.target_direction = None;
         }
     }
 }

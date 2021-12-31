@@ -1,6 +1,6 @@
 use crate::core::{
     components::{Controller, Goon},
-    players::GBodyLocal,
+    players::{GBodyLocal, Biped},
     WORLD_SIZE_X, WORLD_SIZE_Y,
 };
 use bevy::prelude::*;
@@ -24,8 +24,8 @@ impl Plugin for ServerPlayersPlugin {
 // ======================== SYSTEMS ==============================
 // ===============================================================
 fn update_player_transforms(mut query: Query<(&mut Transform, &GBodyLocal), With<Goon>>) {
-    for (mut transform, gbody) in query.iter_mut() {
-        transform.translation = gbody.translation;
+    for (mut transform, local) in query.iter_mut() {
+        transform.translation = local.body.translation;
     }
 }
 
@@ -39,6 +39,7 @@ pub struct PlayerBundle {
     pub transform: Transform,
     pub gbody: GBodyLocal,
     pub controller: Controller,
+    pub biped: Biped,
 }
 
 impl PlayerBundle {
@@ -52,6 +53,7 @@ impl PlayerBundle {
             transform: Transform::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
             gbody: GBodyLocal::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
             controller: Controller::default(),
+            biped: Biped::default(),
         }
     }
 }
