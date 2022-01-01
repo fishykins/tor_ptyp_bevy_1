@@ -3040,16 +3040,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rand_distr"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "964d548f8e7d12e102ef183a0de7e98180c9f8729f555897a857b96e48122d2f"
-dependencies = [
- "num-traits",
- "rand 0.8.4",
-]
-
-[[package]]
 name = "rand_hc"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3576,10 +3566,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "tor_ptyp_bevy_1"
+name = "torus"
 version = "0.1.0"
 dependencies = [
  "argh",
+ "bevy",
+ "torus_client",
+ "torus_core",
+ "torus_server",
+]
+
+[[package]]
+name = "torus_client"
+version = "0.1.0"
+dependencies = [
  "bevy",
  "bevy_advanced_input",
  "bevy_asset_loader",
@@ -3587,8 +3587,33 @@ dependencies = [
  "bevy_networking_turbulence",
  "num",
  "rand 0.8.4",
- "rand_distr",
  "serde",
+]
+
+[[package]]
+name = "torus_core"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_advanced_input",
+ "bevy_asset_loader",
+ "bevy_networking_turbulence",
+ "num",
+ "rand 0.8.4",
+ "serde",
+]
+
+[[package]]
+name = "torus_server"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "bevy_asset_loader",
+ "bevy_networking_turbulence",
+ "num",
+ "rand 0.8.4",
+ "serde",
+ "torus_core",
 ]
 
 [[package]]

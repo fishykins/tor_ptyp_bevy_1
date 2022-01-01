@@ -10,6 +10,7 @@ pub fn lerp_angle(a: f32, b: f32, t: f32) -> f32 {
     a + angle * t
 }
 
+
 pub fn angle_of_difference(a: f32, b: f32) -> f32 {
     let mut angle = b - a;
     if angle > PI {

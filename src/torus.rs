@@ -4,9 +4,8 @@ use bevy::log::LogPlugin;
 use bevy::prelude::*;
 use bevy::MinimalPlugins;
 
-use super::client::ClientPlugin;
-use super::server::ServerPlugins;
-use crate::core::{Session, CorePlugins};
+use torus_core::flow::Session;
+use torus_server::ServerPlugin;
 use std::time::Duration;
 
 #[derive(Default)]
@@ -16,7 +15,6 @@ pub struct TorusPlugin;
 impl Plugin for TorusPlugin {
     fn build(&self, app: &mut AppBuilder) {
         let session = app.world().get_resource::<Session>().unwrap().clone();
-        println!("{}", session.to_string());
 
         app.insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
             1.0 / session.tickrate,
@@ -24,7 +22,6 @@ impl Plugin for TorusPlugin {
 
         // No GUI for headless sessions, so we can use the minimal plugins
         if session.is_headless() {
-            println!("Setting up a headless session...");
             app.add_plugins(MinimalPlugins)
                 .add_plugin(ScheduleRunnerPlugin::default())
                 .add_plugin(DiagnosticsPlugin::default())
@@ -43,15 +40,14 @@ impl Plugin for TorusPlugin {
                 .add_plugins(DefaultPlugins);
         }
 
-        app.add_plugins(CorePlugins::default());
-
         // True if either dedicated server, or client who is hosting.
         if session.is_server() {
-            app.add_plugins(ServerPlugins::default());
+            println!("Starting server...");
+            app.add_plugin(ServerPlugin::default());
         }
 
         if session.is_client() {
-            app.add_plugin(ClientPlugin::default());
+            println!("Starting client...");
         }
 
         if session.debug {

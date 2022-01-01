@@ -107,6 +107,14 @@ pub struct GoonUpdateMessage {
     // agent id, position
     pub goons: Vec<(u32, Vec2)>,
 }
+
+
+#[derive(Clone, Eq, PartialEq, Debug, Hash, Default)]
+pub struct Local;
+
+#[derive(Clone, Eq, PartialEq, Debug, Hash, Default)]
+pub struct Remote;
+
 // ===============================================================
 // ======================== CHANNELS =============================
 // ===============================================================

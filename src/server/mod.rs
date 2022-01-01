@@ -3,13 +3,16 @@ mod players;
 
 use bevy::{prelude::*, log};
 
-#[derive(Default)]
-pub(crate) struct ServerPlugins {}
+use crate::core::AppState;
 
-impl PluginGroup for ServerPlugins {
-    fn build(&mut self, group: &mut bevy::app::PluginGroupBuilder) {
+#[derive(Default)]
+pub(crate) struct ServerPlugin {}
+
+impl Plugin for ServerPlugin {
+    fn build(&self, app: &mut AppBuilder) {
         log::info!("Building server plugins...");
-        group.add(network::ServerNetworkPlugin::default());
-        group.add(players::ServerPlayersPlugin::default());
+        app.add_state(AppState::InGame)
+        .add_plugin(network::ServerNetworkPlugin::default())
+        .add_plugin(players::ServerPlayersPlugin::default());
     }
 }

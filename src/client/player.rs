@@ -4,8 +4,9 @@ use bevy::{log, prelude::*};
 
 use crate::core::{
     components::{Controller, Goon},
-    network::{ClientId, GoonUpdateMessage},
-    players::{Biped, GBodyLocal, GBodyRemote},
+    network::{ClientId, GoonUpdateMessage, Local, Remote},
+    physics::Body,
+    players::Biped,
     AppState, GameTick,
 };
 
@@ -22,20 +23,11 @@ impl Plugin for ClientPlayerPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_system_set_to_stage(
             CoreStage::Update,
-            SystemSet::on_update(AppState::InGame)
-                .with_system(
-                    update_player_remote
-                        .system()
-                        .label("update_player_remote")
-                        .before("update_player_transforms"),
-                )
-                .with_system(
-                    update_player_transforms
-                        .system()
-                        .label("update_player_transforms")
-                        .after("update_player_local")
-                        .after("update_player_remote"),
-                ),
+            SystemSet::on_update(AppState::InGame).with_system(
+                update_player_remote
+                    .system()
+                    .label("update_player_remote"),
+            ),
         );
     }
 }
@@ -51,7 +43,7 @@ fn update_player_remote(
     game_tick: Res<GameTick>,
     textures: Res<TextureAssets>,
     mut commands: Commands,
-    mut query: Query<(&mut GBodyRemote, &Goon)>,
+    mut query: Query<(&mut Body<Remote>, &Goon)>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     if let Some(mut update) = broadcast {
@@ -63,8 +55,8 @@ fn update_player_remote(
                 .position(|&update| update.0 == goon.owner())
             {
                 let (_id, translation) = update.goons.remove(index);
-                remote.body.translation = Vec3::new(translation.x, translation.y, 0.0);
-                remote.tick = game_tick.frame();
+                remote.translation = Vec2::new(translation.x, translation.y);
+                remote.set_last_update(game_tick.frame());
             }
         }
 
@@ -87,51 +79,21 @@ fn update_player_remote(
             });
             entity
                 .insert(Goon::new(id))
-                .insert(GBodyRemote::default())
+                .insert(Body::<Remote>::default())
                 .insert(Biped::default());
             if client_id.is_equal(id) {
                 entity
                     .insert(Player::default())
                     .insert(Controller::default())
-                    .insert(GBodyLocal::from_translation(translation));
+                    .insert(Body::<Local>::from_translation(Vec2::new(
+                        translation.x,
+                        translation.y,
+                    )));
             }
         }
     }
 }
 
-/// Applies gbody positions to transforms. Works for both local and remote players.
-fn update_player_transforms(
-    game_tick: Res<GameTick>,
-    mut query: Query<(&mut Transform, &GBodyRemote, Option<&mut GBodyLocal>)>,
-) {
-    for (mut transform, remote, gbody_local) in query.iter_mut() {
-        let mut target_translation = remote.body.translation;
-        if let Some(mut local) = gbody_local {
-            if game_tick.frame() > remote.tick {
-                // Remote gbody is out of date, interpolate towards local gbody.
-                target_translation = local.body.translation;
-            } else {
-                // All is well, check for local discrepancies.
-                let dist = local
-                    .body
-                    .translation
-                    .distance_squared(remote.body.translation);
-                if dist > 1.0 {
-                    // Smoothly interpolate towards the correct position.
-                    target_translation =
-                        Vec3::lerp(local.body.translation, remote.body.translation, 0.3);
-                    log::debug!("Interpolating ({})", dist);
-                } else {
-                    target_translation = remote.body.translation;
-                }
-            }
-            local.body.translation = target_translation;
-            transform.rotation = Quat::from_rotation_z(local.body.direction);
-        }
-        transform.translation = target_translation;
-        //log::info!("Player at {:?}", target_translation);
-    }
-}
 // ===============================================================
 // ======================= COMPONENTS ============================
 // ===============================================================

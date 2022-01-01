@@ -1,6 +1,8 @@
 use crate::core::{
     components::{Controller, Goon},
-    players::{GBodyLocal, Biped},
+    network::Local,
+    physics::Body,
+    players::Biped,
     WORLD_SIZE_X, WORLD_SIZE_Y,
 };
 use bevy::prelude::*;
@@ -15,19 +17,15 @@ use rand::Rng;
 pub struct ServerPlayersPlugin;
 
 impl Plugin for ServerPlayersPlugin {
-    fn build(&self, app: &mut bevy::prelude::AppBuilder) {
-        app.add_system_to_stage(CoreStage::Update, update_player_transforms.system().label("update_player_transforms"));
+    fn build(&self, _app: &mut bevy::prelude::AppBuilder) {
+
     }
 }
 
 // ===============================================================
 // ======================== SYSTEMS ==============================
 // ===============================================================
-fn update_player_transforms(mut query: Query<(&mut Transform, &GBodyLocal), With<Goon>>) {
-    for (mut transform, local) in query.iter_mut() {
-        transform.translation = local.body.translation;
-    }
-}
+
 
 // ===============================================================
 // ======================== COMPONENTS ===========================
@@ -37,7 +35,7 @@ fn update_player_transforms(mut query: Query<(&mut Transform, &GBodyLocal), With
 pub struct PlayerBundle {
     pub goon: Goon,
     pub transform: Transform,
-    pub gbody: GBodyLocal,
+    pub body: Body<Local>,
     pub controller: Controller,
     pub biped: Biped,
 }
@@ -51,7 +49,7 @@ impl PlayerBundle {
         Self {
             goon: Goon::new(handle),
             transform: Transform::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
-            gbody: GBodyLocal::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
+            body: Body::<Local>::from_translation(Vec2::new(pos_x, pos_y)),
             controller: Controller::default(),
             biped: Biped::default(),
         }

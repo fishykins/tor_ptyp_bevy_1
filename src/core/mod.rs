@@ -1,8 +1,10 @@
 pub mod components;
 #[allow(dead_code)]
 pub mod input;
+#[allow(dead_code)]
 pub mod maths;
 pub mod network;
+pub mod physics;
 pub mod players;
 
 mod session;
@@ -10,35 +12,22 @@ use std::ops::DerefMut;
 
 pub use session::Session;
 
-use bevy::{
-    app::PluginGroupBuilder,
-    log,
-    prelude::*,
-};
+use bevy::{log, prelude::*};
 
 pub const WORLD_SIZE_Y: f32 = 600.0;
 pub const WORLD_SIZE_X: f32 = 800.0;
 
 #[derive(Default)]
 /// A plugin that contains universal assets for the Torus engine.
-pub struct CorePlugins;
+pub struct CorePlugin;
 
-impl PluginGroup for CorePlugins {
-    fn build(&mut self, group: &mut PluginGroupBuilder) {
+impl Plugin for CorePlugin {
+    fn build(&self, app: &mut AppBuilder) {
         log::info!("Building core plugins...");
-        group.add(network::CoreNetworkPlugin::default());
-        group.add(players::CorePlayerPlugin::default());
-        group.add(CoreAppPlugin::default());
-    }
-}
-
-#[derive(Default)]
-/// A plugin that handles basic universal network events.
-struct CoreAppPlugin;
-
-impl Plugin for CoreAppPlugin {
-    fn build(&self, app: &mut bevy::prelude::AppBuilder) {
-        app.insert_resource(GameTick::default())
+        app.add_plugin(network::CoreNetworkPlugin::default())
+            .add_plugin(players::CorePlayerPlugin::default())
+            .add_plugin(physics::PhysicsPlugin::default())
+            .insert_resource(GameTick::default())
             .add_system_to_stage(CoreStage::Last, update.system());
     }
 }

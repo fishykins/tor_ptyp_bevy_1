@@ -1,0 +1,15 @@
+[package]
+name = "torus_server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { version = "0.5.0" }
+bevy_asset_loader = { version = "0.6.0" }
+bevy_networking_turbulence = { version = "0.3.3" }
+rand = "0.8.3"
+serde = "1.0"
+num = "0.4.0"
+torus_core = { path = "../torus_core" }

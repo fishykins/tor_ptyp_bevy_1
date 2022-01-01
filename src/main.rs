@@ -1,16 +1,15 @@
 // disable console on windows for release builds
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-mod client;
-mod core;
-mod server;
+// mod client;
+// mod core;
+// mod server;
 mod torus;
+
 
 use argh::FromArgs;
 use bevy::prelude::*;
 use torus::TorusPlugin;
-
-use crate::core::Session;
+use torus_core::flow::Session;
 
 #[derive(FromArgs)]
 /// A server application to host the game "Torus"
@@ -53,8 +52,11 @@ fn main() {
     );
 
     let mut app = App::build();
+    println!("Starting Torus app...");
+    
     app.init_resource::<Session>()
         .insert_resource(s)
         .add_plugin(TorusPlugin::default());
+
     app.run();
 }
