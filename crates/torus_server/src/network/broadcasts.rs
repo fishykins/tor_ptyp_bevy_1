@@ -2,12 +2,12 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
-use torus_core::{agents::Goon, control::Controller, network::messages::{ClientMessage, GoonUpdateMessage, ServerMessage}, flow::GameTick};
+use torus_core::{agents::Agent, control::Controller, network::messages::{ClientMessage, AgentUpdateMessage, ServerMessage}, flow::GameTick};
 
 /// Takes client controller data and pushes it to goons.
 pub fn handle_client_broadcasts(
     mut net: ResMut<NetworkResource>,
-    mut query: Query<(&Goon, &mut Controller)>,
+    mut query: Query<(&Agent, &mut Controller)>,
 ) {
     let mut controller_map = HashMap::<u32, Controller>::new();
     for (handle, connection) in net.connections.iter_mut() {
@@ -35,18 +35,18 @@ pub fn handle_client_broadcasts(
 pub fn broadcast_client_data(
     mut net: ResMut<NetworkResource>,
     game_tick: Res<GameTick>,
-    query: Query<(&Goon, &Transform)>,
+    query: Query<(&Agent, &Transform)>,
 ) {
-    let mut update_message = GoonUpdateMessage {
+    let mut update_message = AgentUpdateMessage {
         frame: game_tick.frame(),
-        goons: Vec::new(),
+        agents: Vec::new(),
     };
 
-    for (goon, transform) in query.iter() {
-        update_message.goons.push((
-            goon.owner,
+    for (agent, transform) in query.iter() {
+        update_message.agents.push((
+            agent.owner,
             Vec2::new(transform.translation.x, transform.translation.y),
         ));
     }
-    net.broadcast_message(ServerMessage::GoonState(update_message));
+    net.broadcast_message(ServerMessage::AgentState(update_message));
 }

@@ -17,7 +17,7 @@ pub enum ClientRequest {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ServerMessage {
-    GoonState(GoonUpdateMessage)
+    AgentState(AgentUpdateMessage)
 }
 
 /// A response to a specific client's request.
@@ -28,8 +28,8 @@ pub enum ServerResponse {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct GoonUpdateMessage {
+pub struct AgentUpdateMessage {
     pub frame: u64,
     // agent id, position
-    pub goons: Vec<(u32, Vec2)>,
+    pub agents: Vec<(u32, Vec2)>,
 }

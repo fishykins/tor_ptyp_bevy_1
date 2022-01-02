@@ -1,0 +1,77 @@
+use std::time::Duration;
+
+use crate::{agents::AgentPlugin, network::NetworkPlugin};
+use bevy::{
+    app::ScheduleRunnerSettings,
+    log::{Level, LogSettings},
+    prelude::*,
+};
+use bevy_asset_loader::{AssetCollection, AssetLoader};
+use torus_core::{
+    flow::{AppState, GameTick, Session},
+    network::data::ClientId,
+};
+
+pub fn run(s: Session) {
+    // Debug settings
+    let mut log_setting = LogSettings::default();
+    log_setting.level = Level::DEBUG;
+
+    // Build the app
+    let mut app = App::build();
+
+    AssetLoader::new(AppState::Loading)
+        .continue_to_state(AppState::InGame)
+        .with_collection::<TextureAssets>()
+        .build(&mut app);
+
+    // Resources
+    app.insert_resource(s.clone())
+        .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
+            1.0 / s.tickrate,
+        )))
+        .insert_resource(Msaa { samples: 4 })
+        .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))
+        .insert_resource(WindowDescriptor {
+            width: 800.,
+            height: 600.,
+            title: "Torus".to_string(),
+            ..Default::default()
+        })
+        .insert_resource(GameTick::default())
+        .insert_resource(ClientId::default())
+        .insert_resource(log_setting);
+
+    // Establish State/Stage relationship.
+    AppState::insert(&mut app, AppState::Loading);
+
+    // Plugins
+    app.add_plugins(DefaultPlugins)
+        //.add_plugin(AssetsPlugin::default())
+        .add_plugin(AgentPlugin::default())
+        .add_plugin(NetworkPlugin::default());
+
+    // Systems
+    app.add_system_set_to_stage(
+        CoreStage::Last,
+        SystemSet::on_update(AppState::InGame).with_system(GameTick::next.system()),
+    );
+
+    //app.add_system(stage_monitor.system());
+
+    app.run();
+}
+
+#[allow(dead_code)]
+fn stage_monitor(mut state: ResMut<State<AppState>>) {
+    //println!("{:?}", state.current());
+    if state.current() == &AppState::Loading {
+        state.set(AppState::InGame).unwrap();
+    }
+}
+
+#[derive(AssetCollection)]
+struct TextureAssets {
+    #[asset(path = "textures/doddy.png")]
+    player: Handle<Texture>,
+}

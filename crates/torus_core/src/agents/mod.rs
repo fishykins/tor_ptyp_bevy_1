@@ -1,5 +1,5 @@
 pub mod biped;
 pub mod movement;
-mod goon;
+mod agent;
 
-pub use goon::Goon;
+pub use agent::Agent;

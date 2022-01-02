@@ -3,6 +3,6 @@ pub mod events;
 pub mod loading;
 pub mod network;
 pub mod debug;
-mod server_plugin;
+mod server;
 
-pub use server_plugin::ServerPlugin;
+pub use server::run;

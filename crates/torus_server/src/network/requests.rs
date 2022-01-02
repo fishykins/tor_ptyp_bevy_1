@@ -18,7 +18,7 @@ pub fn handle_requests(
                     // First, spawn a new player entity.
                     client_events.send(ClientEvent::Spawn(*handle));
                     // Send a reply to the client, containing their unique ID.
-                    log::info!("Handing id to client [{}]", *handle);
+                    log::info!("Handing ClientId({}) to client [{}]", *handle, *handle);
                     pending_replies.push((*handle, ServerResponse::Id(*handle)));
                 }
                 ClientRequest::Spawn => {

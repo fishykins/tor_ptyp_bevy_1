@@ -1,9 +1,9 @@
 #[derive(Debug, Clone, Default)]
-pub struct Goon {
+pub struct Agent {
     pub owner: u32,
 }
 
-impl Goon {
+impl Agent {
     pub fn new(owner: u32) -> Self {
         Self { owner }
     }

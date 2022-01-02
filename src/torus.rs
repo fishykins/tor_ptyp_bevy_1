@@ -6,6 +6,7 @@ use bevy::MinimalPlugins;
 
 use torus_core::flow::Session;
 use torus_server::ServerPlugin;
+use torus_client::ClientPlugin;
 use std::time::Duration;
 
 #[derive(Default)]
@@ -48,6 +49,7 @@ impl Plugin for TorusPlugin {
 
         if session.is_client() {
             println!("Starting client...");
+            app.add_plugin(ClientPlugin::default());
         }
 
         if session.debug {
