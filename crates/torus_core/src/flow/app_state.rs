@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Clone, Eq, PartialEq, Debug, Hash, StageLabel)]
 pub enum AppState {
+    Starting,
     InGame,
     Loading,
 }

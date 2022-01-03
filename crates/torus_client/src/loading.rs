@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use torus_core::flow::AppState;
-use bevy_asset_loader::{AssetLoader, AssetCollection};
 
 #[derive(Default)]
 pub(crate) struct AssetsPlugin;

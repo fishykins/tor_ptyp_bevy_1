@@ -12,6 +12,12 @@ use torus_core::{
     network::data::ClientId,
 };
 
+#[derive(AssetCollection)]
+pub struct TextureAssets {
+    #[asset(path = "textures/doddy.png")]
+    pub doddy: Handle<Texture>,
+}
+
 pub fn run(s: Session) {
     // Debug settings
     let mut log_setting = LogSettings::default();
@@ -20,6 +26,8 @@ pub fn run(s: Session) {
     // Build the app
     let mut app = App::build();
 
+    AppState::insert(&mut app, AppState::Starting);
+    
     AssetLoader::new(AppState::Loading)
         .continue_to_state(AppState::InGame)
         .with_collection::<TextureAssets>()
@@ -43,35 +51,33 @@ pub fn run(s: Session) {
         .insert_resource(log_setting);
 
     // Establish State/Stage relationship.
-    AppState::insert(&mut app, AppState::Loading);
+    //app.add_state(AppState::Starting);
 
     // Plugins
-    app.add_plugins(DefaultPlugins)
+    app.add_plugins(DefaultPlugins);
         //.add_plugin(AssetsPlugin::default())
-        .add_plugin(AgentPlugin::default())
-        .add_plugin(NetworkPlugin::default());
+        //.add_plugin(AgentPlugin::default())
+        //.add_plugin(NetworkPlugin::default());
 
     // Systems
-    app.add_system_set_to_stage(
-        CoreStage::Last,
-        SystemSet::on_update(AppState::InGame).with_system(GameTick::next.system()),
-    );
+    // app.add_system_set_to_stage(
+    //     CoreStage::Last,
+    //     SystemSet::on_update(AppState::InGame).with_system(GameTick::next.system()),
+    // );
 
-    //app.add_system(stage_monitor.system());
-
+    app.add_startup_system(load.system());
+    app.add_system(monitor_state.system());
     app.run();
 }
 
-#[allow(dead_code)]
-fn stage_monitor(mut state: ResMut<State<AppState>>) {
+fn load(mut state: ResMut<State<AppState>>) {
     //println!("{:?}", state.current());
-    if state.current() == &AppState::Loading {
-        state.set(AppState::InGame).unwrap();
+    if state.current() == &AppState::Starting {
+        state.set(AppState::Loading).unwrap();
+        bevy::log::info!("Loading assets...");
     }
 }
 
-#[derive(AssetCollection)]
-struct TextureAssets {
-    #[asset(path = "textures/doddy.png")]
-    player: Handle<Texture>,
+fn monitor_state(state: ResMut<State<AppState>>) {
+    //bevy::log::info!("{:?}", state.current());
 }

@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 torus_core = { path = "../torus_core" }
 bevy = { version = "0.5.0" }
-bevy_asset_loader = { git = "https://github.com/NiklasEi/bevy_asset_loader", branch = "main" }
+bevy_asset_loader = { path = "C:/Users/Fishy/Documents/Projects/Libraries/cloned/bevy_asset_loader/bevy_asset_loader"}
 bevy_kira_audio = { version = "0.6.0" }
 bevy_networking_turbulence = { version = "0.3.3" }
 bevy_advanced_input = { git = "https://github.com/sadpython/bevy_advanced_input.git", branch = "main" }
