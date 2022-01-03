@@ -17,16 +17,18 @@ impl Plugin for NetworkPlugin {
         app.add_plugin(CoreNetworkPlugin::default())
             .add_startup_system(startup.system())
             //.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(startup.system()))
-            .add_system_set_to_stage(
-                CoreStage::PreUpdate,
+            .add_system_set(
                 SystemSet::on_update(AppState::InGame)
                     .with_system(handle_client_broadcasts.system())
                     .with_system(handle_events.system())
-                    .with_system(handle_requests.system()),
+                    .with_system(handle_requests.system())
+                    .label("input")
+                    .before("simulation"),
             )
-            .add_system_set_to_stage(
-                CoreStage::PostUpdate,
-                SystemSet::on_update(AppState::InGame).with_system(broadcast_client_data.system()),
+            .add_system_set(
+                SystemSet::on_update(AppState::InGame)
+                    .with_system(broadcast_client_data.system())
+                    .after("simulation"),
             );
     }
 }

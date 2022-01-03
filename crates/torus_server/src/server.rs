@@ -15,6 +15,9 @@ pub fn run(s: Session) {
     let mut log_setting = LogSettings::default();
     log_setting.level = Level::INFO;
 
+    // Establish State/Stage relationship.
+    AppState::insert(&mut app, AppState::InGame);
+
     // Resources
     app.insert_resource(s.clone())
         .insert_resource(ScheduleRunnerSettings::run_loop(Duration::from_secs_f64(
@@ -34,17 +37,17 @@ pub fn run(s: Session) {
         .add_plugin(LogPlugin::default())
         .add_plugin(NetworkPlugin::default());
 
-    // Establish State/Stage relationship.
-    AppState::insert(&mut app, AppState::InGame);
-
     // Systems
-    app.add_system_set_to_stage(
-        CoreStage::Update,
-        SystemSet::on_update(AppState::InGame).with_system(spawn_players.system()),
+    app.add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(spawn_players.system())
+            .label("simulation"),
     )
-    .add_system_set_to_stage(
-        CoreStage::Last,
-        SystemSet::on_update(AppState::InGame).with_system(GameTick::next.system()),
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(GameTick::next.system())
+            .label("broadcast")
+            .after("simulation"),
     );
 
     app.run();

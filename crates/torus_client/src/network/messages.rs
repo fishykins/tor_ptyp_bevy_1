@@ -1,11 +1,9 @@
-use bevy::{prelude::*, log};
+use bevy::{log, prelude::*};
 use bevy_networking_turbulence::NetworkResource;
-use torus_core::network::{messages::{ServerResponse, ServerMessage}, data::ClientId};
-
-use crate::agents::AgentEvent;
+use torus_core::network::{data::ClientId, messages::ServerResponse};
 
 /// Handles explicit messages sent from server..
-pub fn handle_messages(mut net: ResMut<NetworkResource>, mut commands: Commands, mut events: EventWriter<AgentEvent>) {
+pub fn handle_messages(mut net: ResMut<NetworkResource>, mut commands: Commands) {
     for (_, connection) in net.connections.iter_mut() {
         let channels = connection.channels().unwrap();
         while let Some(msg) = channels.recv::<ServerResponse>() {
@@ -16,13 +14,6 @@ pub fn handle_messages(mut net: ResMut<NetworkResource>, mut commands: Commands,
                 }
                 ServerResponse::Spawn(spawn) => {
                     log::info!("Spawning data: {}", spawn);
-                }
-            }
-        }
-        while let Some(msg) = channels.recv::<ServerMessage>() {
-            match msg {
-                ServerMessage::AgentState(agents) => {
-                    events.send(AgentEvent::Update(agents));
                 }
             }
         }

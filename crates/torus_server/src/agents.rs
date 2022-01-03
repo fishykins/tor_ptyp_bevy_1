@@ -38,8 +38,10 @@ pub fn spawn_players(mut commands: Commands, mut spawn_events: EventReader<Clien
     for event in spawn_events.iter() {
         match event {
             ClientEvent::Spawn(handle) => {
-                commands.spawn_bundle(PlayerBundle::new(*handle));
-                bevy::log::info!("Spawned player [{}]", handle);
+                let player = PlayerBundle::new(*handle);
+                let pos = player.transform.translation;
+                commands.spawn_bundle(player);
+                bevy::log::info!("Spawned player [{}] at {}", handle, pos);
             }
         }
     }

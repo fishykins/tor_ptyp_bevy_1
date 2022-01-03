@@ -2,7 +2,12 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
-use torus_core::{agents::Agent, control::Controller, network::messages::{ClientMessage, AgentUpdateMessage, ServerMessage}, flow::GameTick};
+use torus_core::{
+    agents::Agent,
+    control::Controller,
+    flow::GameTick,
+    network::messages::{AgentData, AgentUpdateMessage, ClientMessage, ServerMessage},
+};
 
 /// Takes client controller data and pushes it to goons.
 pub fn handle_client_broadcasts(
@@ -21,8 +26,8 @@ pub fn handle_client_broadcasts(
         }
     }
 
-    for (goon, mut controller) in query.iter_mut() {
-        let remote_controller = controller_map.remove(&goon.owner);
+    for (agent, mut controller) in query.iter_mut() {
+        let remote_controller = controller_map.remove(&agent.owner);
         if let Some(remote_controller) = remote_controller {
             controller.translation = remote_controller.translation;
             controller.target_direction = remote_controller.target_direction;
@@ -45,7 +50,9 @@ pub fn broadcast_client_data(
     for (agent, transform) in query.iter() {
         update_message.agents.push((
             agent.owner,
-            Vec2::new(transform.translation.x, transform.translation.y),
+            AgentData {
+                position: Vec2::new(transform.translation.x, transform.translation.y),
+            },
         ));
     }
     net.broadcast_message(ServerMessage::AgentState(update_message));

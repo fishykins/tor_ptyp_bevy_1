@@ -5,6 +5,7 @@ use bevy::{
     app::ScheduleRunnerSettings,
     log::{Level, LogSettings},
     prelude::*,
+    render::camera::WindowOrigin,
 };
 use bevy_asset_loader::{AssetCollection, AssetLoader};
 use torus_core::{
@@ -26,8 +27,8 @@ pub fn run(s: Session) {
     // Build the app
     let mut app = App::build();
 
-    AppState::insert(&mut app, AppState::Starting);
-    
+    AppState::insert(&mut app, AppState::Loading);
+
     AssetLoader::new(AppState::Loading)
         .continue_to_state(AppState::InGame)
         .with_collection::<TextureAssets>()
@@ -50,34 +51,40 @@ pub fn run(s: Session) {
         .insert_resource(ClientId::default())
         .insert_resource(log_setting);
 
-    // Establish State/Stage relationship.
-    //app.add_state(AppState::Starting);
-
     // Plugins
-    app.add_plugins(DefaultPlugins);
-        //.add_plugin(AssetsPlugin::default())
-        //.add_plugin(AgentPlugin::default())
-        //.add_plugin(NetworkPlugin::default());
+    app.add_plugins(DefaultPlugins)
+        .add_plugin(AgentPlugin::default())
+        .add_plugin(NetworkPlugin::default());
 
     // Systems
-    // app.add_system_set_to_stage(
-    //     CoreStage::Last,
-    //     SystemSet::on_update(AppState::InGame).with_system(GameTick::next.system()),
-    // );
+    app.add_system_set(
+        SystemSet::on_enter(AppState::InGame)
+            .with_system(startup.system())
+            .label("startup"),
+    )
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(monitor_state.system())
+            .label("simulation"),
+    )
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(GameTick::next.system())
+            .after("broadcast"),
+    );
 
-    app.add_startup_system(load.system());
     app.add_system(monitor_state.system());
     app.run();
 }
 
-fn load(mut state: ResMut<State<AppState>>) {
-    //println!("{:?}", state.current());
-    if state.current() == &AppState::Starting {
-        state.set(AppState::Loading).unwrap();
-        bevy::log::info!("Loading assets...");
-    }
+pub struct MainCamera;
+
+fn startup(mut commands: Commands) {
+    let mut camera = OrthographicCameraBundle::new_2d();
+    camera.orthographic_projection.window_origin = WindowOrigin::BottomLeft;
+    commands.spawn_bundle(camera).insert(MainCamera);
 }
 
-fn monitor_state(state: ResMut<State<AppState>>) {
-    //bevy::log::info!("{:?}", state.current());
+fn monitor_state(_state: ResMut<State<AppState>>) {
+    //bevy::log::debug!("{:?}", state.current());
 }

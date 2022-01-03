@@ -9,33 +9,40 @@ use torus_core::{
     physics::Body,
 };
 
-use crate::agents::Player;
+use crate::{agents::Player, TextureAssets};
 
-pub fn spawn_agent(
+use super::AgentEvent;
+
+pub fn spawn_agents(
     mut commands: Commands,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    client_id: ClientId,
-    id: u32,
-    translation: Vec2,
-    assets: Res<AssetServer>,
+    mut events: EventReader<AgentEvent>,
+    texture_assets: Res<TextureAssets>,
+    client_id: Res<ClientId>,
 ) {
-    bevy::log::info!("Spawning player {}", id);
-    //let sprite_handle = assets.g
-    let mut transform = Transform::from_translation(Vec3::new(translation.x, translation.y, 0.0));
-    transform.scale = Vec3::new(0.5, 0.5, 1.0);
-    let mut entity = commands.spawn_bundle(SpriteBundle {
-        material: materials.add(sprite_handle.into()),
-        transform,
-        ..Default::default()
-    });
-    entity
-        .insert(Agent::new(id))
-        .insert(Body::<Remote>::from_translation(translation))
-        .insert(Biped::default());
-    if client_id.is_equal(id) {
-        entity
-            .insert(Player::default())
-            .insert(Controller::default())
-            .insert(Body::<Local>::from_translation(translation));
+    for event in events.iter() {
+        match event {
+            AgentEvent::Spawn(handle, data) => {
+                bevy::log::info!("Spawning player {} at {}", handle, data.position);
+                let mut transform =
+                    Transform::from_translation(Vec3::new(data.position.x, data.position.y, 1.0));
+                transform.scale = Vec3::new(0.5, 0.5, 1.0);
+                let mut entity = commands.spawn_bundle(SpriteBundle {
+                    material: materials.add(texture_assets.doddy.clone().into()),
+                    transform,
+                    ..Default::default()
+                });
+                entity
+                    .insert(Agent::new(*handle))
+                    .insert(Body::<Remote>::from_translation(data.position))
+                    .insert(Biped::default());
+                if client_id.is_equal(*handle) {
+                    entity
+                        .insert(Player::default())
+                        .insert(Controller::default())
+                        .insert(Body::<Local>::from_translation(data.position));
+                }
+            }
+        }
     }
 }

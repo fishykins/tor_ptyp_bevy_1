@@ -31,5 +31,10 @@ pub enum ServerResponse {
 pub struct AgentUpdateMessage {
     pub frame: u64,
     // agent id, position
-    pub agents: Vec<(u32, Vec2)>,
+    pub agents: Vec<(u32, AgentData)>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct AgentData {
+    pub position: Vec2,
 }
