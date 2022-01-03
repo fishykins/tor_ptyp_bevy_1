@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use torus_core::{
-    agents::{biped::Biped, Agent},
+    agents::{Biped, Agent},
     control::Controller,
     network::{
         data::ClientId,

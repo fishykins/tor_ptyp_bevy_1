@@ -7,6 +7,7 @@ use std::ops::AddAssign;
 
 use super::InputMap;
 
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct InputPlugin<'a, T, W>(
     std::marker::PhantomData<&'a T>,
     std::marker::PhantomData<&'a W>,
@@ -20,11 +21,8 @@ where
     'a: 'static,
 {
     fn build(&self, app: &mut AppBuilder) {
-        app.init_resource::<InputMap<T, W>>()
-            .add_system_set_to_stage(
-                CoreStage::PreUpdate,
-                SystemSet::on_update(AppState::InGame)
-                    .with_system(InputMap::<T, W>::update.system()),
-            );
+        app.init_resource::<InputMap<T, W>>().add_system_set(
+            SystemSet::on_update(AppState::InGame).with_system(InputMap::<T, W>::update.system()),
+        );
     }
 }

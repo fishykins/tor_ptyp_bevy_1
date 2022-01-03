@@ -1,5 +1,9 @@
-#[derive(Debug, Clone, Default)]
+use bevy::reflect::Reflect;
+use bevy_inspector_egui::Inspectable;
+
+#[derive(Debug, Clone, Default, Inspectable, Reflect)]
 pub struct Agent {
+    #[inspectable(label = "Owner", read_only)]
     pub owner: u32,
 }
 

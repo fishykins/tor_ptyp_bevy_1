@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{agents::AgentPlugin, network::NetworkPlugin};
+use crate::{agents::AgentPlugin, network::NetworkPlugin, input::InputPlugin};
 use bevy::{
     app::ScheduleRunnerSettings,
     log::{Level, LogSettings},
@@ -8,6 +8,7 @@ use bevy::{
     render::camera::WindowOrigin,
 };
 use bevy_asset_loader::{AssetCollection, AssetLoader};
+use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
 use torus_core::{
     flow::{AppState, GameTick, Session},
     network::data::ClientId,
@@ -54,7 +55,16 @@ pub fn run(s: Session) {
     // Plugins
     app.add_plugins(DefaultPlugins)
         .add_plugin(AgentPlugin::default())
-        .add_plugin(NetworkPlugin::default());
+        .add_plugin(NetworkPlugin::default())
+        .add_plugin(WorldInspectorPlugin::new())
+        .add_plugin(InputPlugin::default());
+
+    // Register inspectables
+    app.register_inspectable::<torus_core::agents::Agent>()
+    .register_inspectable::<torus_core::control::Controller>()
+    .register_inspectable::<torus_core::physics::Body<torus_core::network::Local>>()
+    .register_inspectable::<torus_core::physics::Body<torus_core::network::Remote>>()
+        .register_inspectable::<torus_core::agents::Biped>();
 
     // Systems
     app.add_system_set(
@@ -70,10 +80,9 @@ pub fn run(s: Session) {
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
             .with_system(GameTick::next.system())
-            .after("broadcast"),
+            .after("broadcasts"),
     );
 
-    app.add_system(monitor_state.system());
     app.run();
 }
 

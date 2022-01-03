@@ -4,13 +4,15 @@ use std::hash::Hash;
 use std::ops::AddAssign;
 
 use bevy::prelude::*;
-use num::{Zero, Signed};
+use num::{Signed, Zero};
 
-use super::{Control, Binding};
+use super::{Binding, Control};
 
 pub struct InputMap<T, W> {
     controls: HashMap<T, Control<W>>,
     active: HashMap<T, bool>,
+    pressed: HashMap<T, bool>,
+    released: HashMap<T, bool>,
     value: HashMap<T, W>,
 }
 
@@ -19,6 +21,8 @@ impl<T, W> Default for InputMap<T, W> {
         Self {
             controls: HashMap::new(),
             active: HashMap::new(),
+            pressed: HashMap::new(),
+            released: HashMap::new(),
             value: HashMap::new(),
         }
     }
@@ -50,11 +54,29 @@ where
         T: 'static + Debug,
         W: 'static + Debug,
     {
-        map.active = map
+        let active = map
             .controls
             .iter()
             .map(|(key, control)| (key.clone(), control.active(&input)))
             .collect::<HashMap<T, bool>>();
+
+        map.pressed = active
+            .iter()
+            .map(|(key, active)| {
+                let pressed = *active && !map.active(key);
+                (key.clone(), pressed)
+            })
+            .collect::<HashMap<T, bool>>();
+
+        map.released = active
+            .iter()
+            .map(|(key, active)| {
+                let released = !*active && map.active(key);
+                (key.clone(), released)
+            })
+            .collect::<HashMap<T, bool>>();
+
+        map.active = active;
 
         map.value = map
             .controls
@@ -65,6 +87,14 @@ where
 
     pub fn active(&self, key: &T) -> bool {
         *self.active.get(key).unwrap_or(&false)
+    }
+
+    pub fn pressed(&self, key: &T) -> bool {
+        *self.pressed.get(key).unwrap_or(&false)
+    }
+
+    pub fn released(&self, key: &T) -> bool {
+        *self.released.get(key).unwrap_or(&false)
     }
 
     pub fn active_value(&self, key: &T) -> Option<W> {

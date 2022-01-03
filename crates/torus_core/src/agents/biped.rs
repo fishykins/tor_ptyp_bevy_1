@@ -1,9 +1,16 @@
 use bevy::{core::Time, prelude::*};
-
+use bevy_inspector_egui::Inspectable;
 use crate::{physics::Body, control::Controller, network};
 
+const BASE_SPEED: f32 = 200.0;
+const RUN_MULTIPLIER: f32 = 1.5;
+const ACCELERATION: f32 = 0.1;
+const STOPPING_DISTANCE: f32 = 200.0;
+const TURN_SPEED: f32 = 4.0;
+const TURN_LIMMIT: f32 = 0.75;
 
-#[derive(Debug, Clone, Copy)]
+
+#[derive(Debug, Clone, Copy, Inspectable, Reflect)]
 pub struct Biped {
     pub speed: f32,
     pub run_multiplier: f32,
@@ -16,12 +23,12 @@ pub struct Biped {
 impl Default for Biped {
     fn default() -> Self {
         Self {
-            speed: 200.0,
-            run_multiplier: 1.5,
-            acceleration: 0.1,
-            stopping_distance: 200.0,
-            turn_speed: 4.0,
-            turn_limmit: 0.75,
+            speed: BASE_SPEED,
+            run_multiplier: RUN_MULTIPLIER,
+            acceleration: ACCELERATION,
+            stopping_distance: STOPPING_DISTANCE,
+            turn_speed: TURN_SPEED,
+            turn_limmit: TURN_LIMMIT,
         }
     }
 }

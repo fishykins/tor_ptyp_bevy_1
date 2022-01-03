@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use rand::Rng;
 use torus_core::{
-    agents::{biped::Biped, Agent},
+    agents::{Biped, Agent},
     control::Controller,
     network::Local,
     physics::Body, WORLD_SIZE_X, WORLD_SIZE_Y,

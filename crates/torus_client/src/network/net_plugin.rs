@@ -32,7 +32,7 @@ impl Plugin for NetworkPlugin {
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
                     .with_system(broadcast_client_data.system())
-                    .label("broadcast")
+                    .label("broadcasts")
                     .after("simulation")
             );
     }
