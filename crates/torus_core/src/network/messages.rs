@@ -37,4 +37,5 @@ pub struct AgentUpdateMessage {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AgentData {
     pub position: Vec2,
+    pub rotation: f32,
 }

@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{agents::AgentPlugin, network::NetworkPlugin, input::InputPlugin};
+use crate::{agents::AgentPlugin, input::InputPlugin, network::NetworkPlugin};
 use bevy::{
     app::ScheduleRunnerSettings,
     log::{Level, LogSettings},
@@ -10,8 +10,11 @@ use bevy::{
 use bevy_asset_loader::{AssetCollection, AssetLoader};
 use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
 use torus_core::{
+    agents::move_agents,
+    bridging::apply_transforms_system,
     flow::{AppState, GameTick, Session},
-    network::data::ClientId,
+    network::{data::ClientId, Local},
+    physics::Rigidbody,
 };
 
 #[derive(AssetCollection)]
@@ -61,9 +64,9 @@ pub fn run(s: Session) {
 
     // Register inspectables
     app.register_inspectable::<torus_core::agents::Agent>()
-    .register_inspectable::<torus_core::control::Controller>()
-    .register_inspectable::<torus_core::physics::Body<torus_core::network::Local>>()
-    .register_inspectable::<torus_core::physics::Body<torus_core::network::Remote>>()
+        .register_inspectable::<torus_core::control::Controller>()
+        .register_inspectable::<torus_core::physics::Rigidbody<torus_core::network::Local>>()
+        .register_inspectable::<torus_core::physics::Rigidbody<torus_core::network::Remote>>()
         .register_inspectable::<torus_core::agents::Biped>();
 
     // Systems
@@ -74,8 +77,20 @@ pub fn run(s: Session) {
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
-            .with_system(monitor_state.system())
+            .with_system(move_agents.system())
             .label("simulation"),
+    )
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(Rigidbody::<Local>::update_system.system())
+            .label("rigidbodies")
+            .after("simulation"),
+    )
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(apply_transforms_system.system())
+            .label("transforms")
+            .after("rigidbodies"),
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
@@ -92,8 +107,4 @@ fn startup(mut commands: Commands) {
     let mut camera = OrthographicCameraBundle::new_2d();
     camera.orthographic_projection.window_origin = WindowOrigin::BottomLeft;
     commands.spawn_bundle(camera).insert(MainCamera);
-}
-
-fn monitor_state(_state: ResMut<State<AppState>>) {
-    //bevy::log::debug!("{:?}", state.current());
 }

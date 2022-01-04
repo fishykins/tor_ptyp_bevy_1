@@ -7,7 +7,13 @@ use bevy::{
     log::{Level, LogPlugin, LogSettings},
     prelude::*,
 };
-use torus_core::flow::{AppState, GameTick, Session};
+use torus_core::{
+    agents::move_agents,
+    bridging::apply_transforms_system,
+    flow::{AppState, GameTick, Session},
+    network::Local,
+    physics::Rigidbody,
+};
 
 pub fn run(s: Session) {
     let mut app = App::build();
@@ -41,7 +47,20 @@ pub fn run(s: Session) {
     app.add_system_set(
         SystemSet::on_update(AppState::InGame)
             .with_system(spawn_players.system())
+            .with_system(move_agents.system())
             .label("simulation"),
+    )
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(Rigidbody::<Local>::update_system.system())
+            .label("rigidbodies")
+            .after("simulation"),
+    )
+    .add_system_set(
+        SystemSet::on_update(AppState::InGame)
+            .with_system(apply_transforms_system.system())
+            .label("transforms")
+            .after("rigidbodies"),
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
@@ -49,6 +68,5 @@ pub fn run(s: Session) {
             .label("broadcast")
             .after("simulation"),
     );
-
     app.run();
 }

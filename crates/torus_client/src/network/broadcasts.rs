@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
-use torus_core::{control::Controller, network::{messages::{ServerMessage, ClientMessage, AgentData}, Remote}, agents::Agent, physics::Body};
+use torus_core::{control::Controller, network::{messages::{ServerMessage, ClientMessage, AgentData}, Remote}, agents::Agent, physics::Rigidbody};
 
 use crate::agents::AgentEvent;
 
@@ -12,7 +12,7 @@ pub fn broadcast_client_data(mut net: ResMut<NetworkResource>, controller: Query
     }
 }
 
-pub fn handle_server_broadcasts(mut net: ResMut<NetworkResource>, mut agent_events: EventWriter<AgentEvent>, mut query: Query<(&mut Body<Remote>, &Agent)>) {
+pub fn handle_server_broadcasts(mut net: ResMut<NetworkResource>, mut agent_events: EventWriter<AgentEvent>, mut query: Query<(&mut Rigidbody<Remote>, &Agent)>) {
     let mut pending_agent_updates = HashMap::<u32, AgentData>::new();
     for (_, connection) in net.connections.iter_mut() {
         let channels = connection.channels().unwrap();
@@ -28,7 +28,8 @@ pub fn handle_server_broadcasts(mut net: ResMut<NetworkResource>, mut agent_even
     }
     for (mut body, agent) in query.iter_mut() {
         if let Some(data) = pending_agent_updates.remove(&agent.owner) {
-            body.translation = data.position;
+            body.position = data.position;
+            body.rotation = data.rotation;
         }
     }
 

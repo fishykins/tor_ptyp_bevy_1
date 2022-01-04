@@ -52,6 +52,7 @@ pub fn broadcast_client_data(
             agent.owner,
             AgentData {
                 position: Vec2::new(transform.translation.x, transform.translation.y),
+                rotation: transform.rotation.to_axis_angle().1,
             },
         ));
     }

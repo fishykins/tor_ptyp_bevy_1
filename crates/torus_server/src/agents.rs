@@ -4,7 +4,7 @@ use torus_core::{
     agents::{Biped, Agent},
     control::Controller,
     network::Local,
-    physics::Body, WORLD_SIZE_X, WORLD_SIZE_Y,
+    physics::Rigidbody, WORLD_SIZE_X, WORLD_SIZE_Y,
 };
 
 use crate::events::ClientEvent;
@@ -13,7 +13,7 @@ use crate::events::ClientEvent;
 pub struct PlayerBundle {
     pub agent: Agent,
     pub transform: Transform,
-    pub body: Body<Local>,
+    pub body: Rigidbody<Local>,
     pub controller: Controller,
     pub biped: Biped,
 }
@@ -27,7 +27,7 @@ impl PlayerBundle {
         Self {
             agent: Agent::new(handle),
             transform: Transform::from_translation(Vec3::new(pos_x, pos_y, 1.0)),
-            body: Body::<Local>::from_translation(Vec2::new(pos_x, pos_y)),
+            body: Rigidbody::<Local>::from_translation(Vec2::new(pos_x, pos_y)),
             controller: Controller::default(),
             biped: Biped::default(),
         }

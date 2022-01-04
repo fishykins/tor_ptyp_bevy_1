@@ -32,6 +32,12 @@ impl ClientId {
     pub fn is_equal(&self, i: u32) -> bool {
         self.0 == ServerData::Acquired(i)
     }
+    pub fn allocated(&self) -> bool {
+        match self.0 {
+            ServerData::Acquired(_) => true,
+            _ => false,
+        }
+    }
 }
 
 impl Display for ClientId {

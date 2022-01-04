@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use bevy::prelude::*;
 use torus_core::{
     agents::{Biped, Agent},
@@ -6,7 +8,7 @@ use torus_core::{
         data::ClientId,
         {Local, Remote},
     },
-    physics::Body,
+    physics::Rigidbody,
 };
 
 use crate::{agents::Player, TextureAssets};
@@ -20,6 +22,9 @@ pub fn spawn_agents(
     texture_assets: Res<TextureAssets>,
     client_id: Res<ClientId>,
 ) {
+    if !client_id.deref().allocated() {
+        return;
+    }
     for event in events.iter() {
         match event {
             AgentEvent::Spawn(handle, data) => {
@@ -34,13 +39,13 @@ pub fn spawn_agents(
                 });
                 entity
                     .insert(Agent::new(*handle))
-                    .insert(Body::<Remote>::from_translation(data.position))
+                    .insert(Rigidbody::<Remote>::from_translation(data.position))
                     .insert(Biped::default());
                 if client_id.is_equal(*handle) {
                     entity
                         .insert(Player::default())
                         .insert(Controller::default())
-                        .insert(Body::<Local>::from_translation(data.position));
+                        .insert(Rigidbody::<Local>::from_translation(data.position));
                 }
             }
         }
