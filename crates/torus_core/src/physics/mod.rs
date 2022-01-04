@@ -14,11 +14,19 @@ pub fn lerp_angle(a: f32, b: f32, t: f32) -> f32 {
     normalize_angle(a + angle * t)
 }
 
-
+/// Calculates the smallest difference between two angles.
+/// Assumes that values are normalized.
 pub fn angle_of_difference(a: f32, b: f32) -> f32 {
-    normalize_angle(b - a)
+    let mut angle = b - a;
+    if angle > PI {
+        angle -= PI;
+    } else if angle < 0.0 {
+        angle += PI;
+    }
+    angle
 }
 
+/// Normalizes the angle to the range of 0 -> 2 * PI.
 pub fn normalize_angle(angle: f32) -> f32 {
     if angle > 2.0 * std::f32::consts::PI {
         return angle - std::f32::consts::PI * 2.0;

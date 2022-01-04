@@ -2,7 +2,7 @@ use bevy::{core::Time, prelude::*};
 use bevy_inspector_egui::Inspectable;
 use crate::{physics::Rigidbody, control::Controller, network};
 
-const BASE_SPEED: f32 = 1000.0;
+const BASE_SPEED: f32 = 20000.0;
 const TURN_SPEED: f32 = 4.0;
 const MASS: f32 = 64.0;
 
