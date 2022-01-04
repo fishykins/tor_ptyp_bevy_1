@@ -12,7 +12,7 @@ use torus_core::{
     bridging::apply_transforms_system,
     flow::{AppState, GameTick, Session},
     network::Local,
-    physics::Rigidbody,
+    physics::Rigidbody, console::ConsolePlugin,
 };
 
 pub fn run(s: Session) {
@@ -41,6 +41,7 @@ pub fn run(s: Session) {
         .add_plugin(ScheduleRunnerPlugin::default())
         .add_plugin(DiagnosticsPlugin::default())
         .add_plugin(LogPlugin::default())
+        .add_plugin(ConsolePlugin::default())
         .add_plugin(NetworkPlugin::default());
 
     // Systems

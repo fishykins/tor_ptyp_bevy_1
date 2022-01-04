@@ -11,6 +11,8 @@ bevy_asset_loader = { version = "0.6.0" }
 bevy_networking_turbulence = { version = "0.3.3" }
 bevy-inspector-egui = { git = "https://github.com/jakobhellermann/bevy-inspector-egui", branch = "main" }
 bevy_advanced_input = { git = "https://github.com/sadpython/bevy_advanced_input.git", branch = "main" }
+crossbeam = "0.8"
 rand = "0.8.3"
 serde = "1.0"
 num = "0.4.0"
+argh = "0.1.4"

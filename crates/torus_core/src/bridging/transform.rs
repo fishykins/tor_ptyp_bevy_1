@@ -5,7 +5,7 @@ use crate::{
 };
 use bevy::prelude::*;
 
-const INTERPOLATION_THRESHOLD: f32 = 2.0;
+const INTERPOLATION_THRESHOLD: f32 = 5.0;
 const INTERPOLATION_SPEED: f32 = 0.1;
 
 /// A system that will update a transform, based on data in both remote and local bodies.
@@ -48,14 +48,15 @@ pub fn apply_transforms_system(
         if game_tick.frame() > remote_body.last_updated() + 1 {
             // Remote Body is out of date, interpolate towards local Body...
             target_translation = local_body.position;
-            bevy::log::warn!("Remote body is out of date, interpolating towards local body.");
+            if game_tick.frame() > remote_body.last_updated() + 2 {
+                bevy::log::warn!("Remote body is behind by {} ticks", game_tick.frame() - remote_body.last_updated());
+            }
         } else {
             // All is well, check for local discrepancies.
             let dist = local_body.position.distance_squared(remote_body.position);
             if dist > INTERPOLATION_THRESHOLD {
                 // Smoothly interpolate towards the correct position.
                 target_translation = Vec2::lerp(local_body.position, remote_body.position, INTERPOLATION_SPEED);
-                bevy::log::debug!("Interpolating ({})", dist);
             } else {
                 target_translation = remote_body.position;
             }
