@@ -18,5 +18,5 @@ pub fn camera_update(
     let mut cam_q = query.q1();
     let mut cam = cam_q.single_mut();
 
-    cam.translation = cam.translation.lerp(pos, 0.01);
+    cam.translation = cam.translation.lerp(pos, 0.03);
 }

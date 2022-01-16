@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{agents::spawn_agents, assets::*, input::InputPlugin, network::NetworkPlugin, camera_update};
+use crate::{agents::spawn_agents, assets::*, input::InputPlugin, network::NetworkPlugin, camera_update, world::spawn_deco};
 use bevy::{
     app::ScheduleRunnerSettings,
     log::{Level, LogSettings},
@@ -8,6 +8,7 @@ use bevy::{
     render::camera::WindowOrigin,
 };
 use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
+use bevy_prototype_lyon::plugin::ShapePlugin;
 use torus_core::{
     agents::{move_agents, AgentEvent},
     flow::{AppState, GameTick, Session},
@@ -47,7 +48,8 @@ pub fn run(s: Session) {
         .add_plugin(AssetPlugin)
         .add_plugin(NetworkPlugin)
         .add_plugin(WorldInspectorPlugin::new())
-        .add_plugin(InputPlugin);
+        .add_plugin(InputPlugin)
+        .add_plugin(ShapePlugin);
 
     // Events
     app.add_event::<AgentEvent>();
@@ -105,4 +107,7 @@ fn startup(mut commands: Commands) {
     let mut camera = OrthographicCameraBundle::new_2d();
     camera.orthographic_projection.window_origin = WindowOrigin::BottomLeft;
     commands.spawn_bundle(camera).insert(MainCamera);
+    for _ in 0..20 {
+        spawn_deco(&mut commands);
+    }
 }
