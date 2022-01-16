@@ -2,8 +2,7 @@ use std::ops::Deref;
 
 use bevy::prelude::*;
 use torus_core::{
-    agents::{Biped, Agent},
-    control::Controller,
+    agents::{Agent, Biped, Controller, AgentEvent},
     network::{
         data::ClientId,
         {Local, Remote},
@@ -11,16 +10,15 @@ use torus_core::{
     physics::Rigidbody,
 };
 
-use crate::{agents::Player, TextureAssets};
-
-use super::AgentEvent;
+use crate::agents::Player;
+use crate::assets::Images;
 
 pub fn spawn_agents(
     mut commands: Commands,
-    mut materials: ResMut<Assets<ColorMaterial>>,
     mut events: EventReader<AgentEvent>,
-    texture_assets: Res<TextureAssets>,
+    texture_assets: Res<Images>,
     client_id: Res<ClientId>,
+    agents: Query<&Agent>,
 ) {
     if !client_id.deref().allocated() {
         return;
@@ -28,12 +26,16 @@ pub fn spawn_agents(
     for event in events.iter() {
         match event {
             AgentEvent::Spawn(handle, data) => {
+                if agents.iter().any(|agent| agent.owner == *handle) {
+                    continue;
+                }
+
                 bevy::log::info!("Spawning player {} at {}", handle, data.position);
                 let mut transform =
                     Transform::from_translation(Vec3::new(data.position.x, data.position.y, 1.0));
                 transform.scale = Vec3::new(0.5, 0.5, 1.0);
                 let mut entity = commands.spawn_bundle(SpriteBundle {
-                    material: materials.add(texture_assets.doddy.clone().into()),
+                    texture: texture_assets.player.clone(),
                     transform,
                     ..Default::default()
                 });

@@ -4,12 +4,24 @@ use crate::{
     physics::Rigidbody,
 };
 use bevy::prelude::*;
+use bevy_inspector_egui::Inspectable;
 
 const INTERPOLATION_THRESHOLD: f32 = 5.0;
 const INTERPOLATION_SPEED: f32 = 0.1;
 
+/// A Bevy system to update all rigidbodies.
+pub fn physics_update<T>(time: Res<Time>, mut rbs: Query<&mut Rigidbody<T>>)
+where
+    T: 'static + Sync + Send + Default + Inspectable + Reflect,
+{
+    for mut rb in rbs.iter_mut() {
+        rb.update(time.delta_seconds());
+    }
+}
+
+
 /// A system that will update a transform, based on data in both remote and local bodies.
-pub fn apply_transforms_system(
+pub fn transform_update(
     game_tick: Res<GameTick>,
     mut query: Query<(
         &mut Transform,

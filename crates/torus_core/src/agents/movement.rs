@@ -1,5 +1,5 @@
 use crate::agents::Biped;
-use crate::control::Controller;
+use super::Controller;
 use crate::network::Local;
 use crate::physics::{lerp_angle, Rigidbody};
 use bevy::prelude::*;

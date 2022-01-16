@@ -13,22 +13,22 @@ use super::{broadcast_client_data, handle_client_broadcasts, handle_events, hand
 pub struct NetworkPlugin;
 
 impl Plugin for NetworkPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_plugin(CoreNetworkPlugin::default())
             .add_startup_system(startup.system())
             //.add_system_set(SystemSet::on_enter(AppState::InGame).with_system(startup.system()))
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
-                    .with_system(handle_client_broadcasts.system())
-                    .with_system(handle_events.system())
-                    .with_system(handle_requests.system())
-                    .label("input")
-                    .before("simulation"),
+                    .with_system(handle_client_broadcasts)
+                    .with_system(handle_events)
+                    .with_system(handle_requests)
+                    .label("receive")
+                    .before("physics"),
             )
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
-                    .with_system(broadcast_client_data.system())
-                    .after("simulation"),
+                    .with_system(broadcast_client_data)
+                    .after("physics"),
             );
     }
 }

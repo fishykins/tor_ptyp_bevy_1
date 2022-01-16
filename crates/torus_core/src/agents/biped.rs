@@ -1,13 +1,12 @@
+use crate::{agents::Controller, network::Local, physics::Rigidbody};
 use bevy::{core::Time, prelude::*};
 use bevy_inspector_egui::Inspectable;
-use crate::{physics::Rigidbody, control::Controller, network};
 
 const BASE_SPEED: f32 = 20000.0;
 const TURN_SPEED: f32 = 4.0;
 const MASS: f32 = 64.0;
 
-
-#[derive(Debug, Clone, Copy, Inspectable, Reflect)]
+#[derive(Debug, Clone, Copy, Inspectable, Reflect, Component)]
 pub struct Biped {
     pub speed: f32,
     pub turn_speed: f32,
@@ -26,7 +25,10 @@ impl Default for Biped {
 
 impl Biped {
     #[allow(dead_code)]
-    pub fn movement_system(_time: Res<Time>, mut query: Query<(&mut Rigidbody<network::Local>, &Biped, &Controller)>) {
+    pub fn movement_system(
+        _time: Res<Time>,
+        mut query: Query<(&mut Rigidbody<Local>, &Biped, &Controller)>,
+    ) {
         for (mut _body, _biped, controller) in query.iter_mut() {
             // Sort out the direction
             if let Some(translation) = controller.translation {

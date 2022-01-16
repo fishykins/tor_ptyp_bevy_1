@@ -23,7 +23,14 @@ pub struct Session {
 }
 
 impl Session {
-    pub fn new(is_server: bool, is_client: bool, address: Option<String>, port: u16, debug: bool, tickrate: f64) -> Self {
+    pub fn new(
+        is_server: bool,
+        is_client: bool,
+        address: Option<String>,
+        port: u16,
+        debug: bool,
+        tickrate: f64,
+    ) -> Self {
         Self {
             session_type: get_session_type(is_server, is_client),
             address,
@@ -71,9 +78,17 @@ impl Display for SessionType {
 impl Display for Session {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.is_headless() {
-            write!(f, "{}:{} (headless), t = {}", self.session_type, self.port, self.tickrate)
+            write!(
+                f,
+                "{}:{} (headless), t = {}",
+                self.session_type, self.port, self.tickrate
+            )
         } else {
-            write!(f, "{}:{}, t = {}", self.session_type, self.port, self.tickrate)
+            write!(
+                f,
+                "{}:{}, t = {}",
+                self.session_type, self.port, self.tickrate
+            )
         }
     }
 }

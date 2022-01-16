@@ -20,7 +20,7 @@ where
     W: Clone + Copy + Send + Sync + Debug + Default + AddAssign<W> + Zero + PartialOrd + Signed,
     'a: 'static,
 {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.init_resource::<InputMap<T, W>>().add_system_set(
             SystemSet::on_update(AppState::InGame).with_system(InputMap::<T, W>::update.system()),
         );

@@ -1,7 +1,7 @@
 use std::ops::{Deref, DerefMut};
 use bevy_inspector_egui::{WorldInspectorParams};
 use torus_core::{
-    control::Controller,
+    agents::Controller,
     flow::AppState,
     input::{Binding, InputMap, InputPlugin as CoreInputPlugin},
 };
@@ -17,14 +17,14 @@ use crate::MainCamera;
 pub(crate) struct InputPlugin;
 
 impl Plugin for InputPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_plugin(CoreInputPlugin::<ControlScheme, f32>::default())
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
                     .with_system(update_controller.system())
                     .with_system(toggle_inspector.system())
                     .label("input")
-                    .before("simulation"),
+                    .before("physics"),
             )
             .add_startup_system(startup.system());
     }
@@ -71,7 +71,7 @@ fn update_controller(
         return;
     }
     let mut controller = query.iter_mut().next().unwrap();
-    let camera = cameras.single().unwrap();
+    let camera = cameras.single();
     let window = windows.get_primary().unwrap();
 
     let input = input_map.deref();

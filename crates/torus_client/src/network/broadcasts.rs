@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
 use torus_core::{
-    agents::Agent,
-    control::Controller,
+    agents::{Agent, AgentEvent, Controller},
     flow::GameTick,
     network::{
         messages::{AgentData, ClientMessage, ServerMessage},
@@ -12,8 +11,6 @@ use torus_core::{
     },
     physics::Rigidbody,
 };
-
-use crate::agents::AgentEvent;
 
 pub fn broadcast_client_data(mut net: ResMut<NetworkResource>, controller: Query<&Controller>) {
     for controller in controller.iter() {

@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 use bevy_networking_turbulence::NetworkResource;
 use torus_core::{
-    agents::Agent,
-    control::Controller,
+    agents::{Agent, Controller},
     flow::GameTick,
     network::messages::{AgentData, AgentUpdateMessage, ClientMessage, ServerMessage},
 };

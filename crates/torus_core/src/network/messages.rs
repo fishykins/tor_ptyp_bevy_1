@@ -1,6 +1,6 @@
 use bevy::math::Vec2;
 use serde::{Deserialize, Serialize};
-use crate::control::Controller;
+use crate::agents::Controller;
 
 /// Client FYI broadcasts, such as input data.
 #[derive(Serialize, Deserialize, Debug, Clone)]

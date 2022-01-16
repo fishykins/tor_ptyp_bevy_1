@@ -9,14 +9,13 @@ use bevy::{
 };
 use torus_core::{
     agents::move_agents,
-    bridging::apply_transforms_system,
     flow::{AppState, GameTick, Session},
     network::Local,
-    physics::Rigidbody, console::ConsolePlugin,
+    physics::{physics_update, transform_update},
 };
 
 pub fn run(s: Session) {
-    let mut app = App::build();
+    let mut app = App::new();
 
     let mut log_setting = LogSettings::default();
     log_setting.level = Level::INFO;
@@ -41,7 +40,6 @@ pub fn run(s: Session) {
         .add_plugin(ScheduleRunnerPlugin::default())
         .add_plugin(DiagnosticsPlugin::default())
         .add_plugin(LogPlugin::default())
-        .add_plugin(ConsolePlugin::default())
         .add_plugin(NetworkPlugin::default());
 
     // Systems
@@ -49,25 +47,25 @@ pub fn run(s: Session) {
         SystemSet::on_update(AppState::InGame)
             .with_system(spawn_players.system())
             .with_system(move_agents.system())
-            .label("simulation"),
+            .label("input"),
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
-            .with_system(Rigidbody::<Local>::update_system.system())
-            .label("rigidbodies")
-            .after("simulation"),
+            .with_system(physics_update::<Local>)
+            .label("physics")
+            .after("input"),
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
-            .with_system(apply_transforms_system.system())
-            .label("transforms")
-            .after("rigidbodies"),
+            .with_system(transform_update)
+            .label("transform")
+            .after("physics"),
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
             .with_system(GameTick::next.system())
-            .label("broadcast")
-            .after("simulation"),
+            .label("tick")
+            .after("physics"),
     );
     app.run();
 }

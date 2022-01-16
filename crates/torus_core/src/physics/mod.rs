@@ -1,8 +1,12 @@
 mod rigidbody;
-
-pub use rigidbody::*;
+mod update;
+mod transform;
 
 use std::f32::consts::PI;
+
+pub use transform::*;
+pub use rigidbody::*;
+pub use update::*;
 
 pub fn lerp_angle(a: f32, b: f32, t: f32) -> f32 {
     let mut angle = b - a;

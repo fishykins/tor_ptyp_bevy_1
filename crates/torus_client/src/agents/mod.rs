@@ -1,12 +1,7 @@
-mod agent_plugin;
-mod events;
 mod spawn;
-mod movement;
 
-//pub use spawn::*;
-pub use agent_plugin::AgentPlugin;
-pub use events::AgentEvent;
-pub use movement::*;
+use bevy::prelude::Component;
+pub use spawn::*;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Component)]
 pub struct Player;

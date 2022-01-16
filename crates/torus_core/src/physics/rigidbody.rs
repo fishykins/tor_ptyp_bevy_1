@@ -15,7 +15,8 @@ impl Default for RigidbodyType {
     }
 }
 
-#[derive(Clone, Inspectable, Reflect)]
+/// A rigidbody component
+#[derive(Clone, Inspectable, Reflect, Component)]
 pub struct Rigidbody<T>
 where
     T: 'static + Sync + Send + Default + Inspectable + Reflect,
@@ -132,12 +133,6 @@ where
         // Update tick data
         if self.auto_tracking {
             self.last_updated += 1;
-        }
-    }
-
-    pub fn update_system(time: Res<Time>, mut rbs: Query<&mut Rigidbody<T>>) {
-        for mut rb in rbs.iter_mut() {
-            rb.update(time.delta_seconds());
         }
     }
 

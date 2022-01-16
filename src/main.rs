@@ -11,7 +11,7 @@ use torus_server;
 /// A server application to host the game "Torus"
 pub struct Flags {
     /// number of ticks per second
-    #[argh(option, short = 't', default = "60.0")]
+    #[argh(option, short = 't', default = "120.0")]
     pub tickrate: f64,
 
     /// port to listen on

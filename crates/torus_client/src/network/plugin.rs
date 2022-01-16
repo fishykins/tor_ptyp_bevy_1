@@ -17,7 +17,7 @@ use torus_core::{
 pub struct NetworkPlugin;
 
 impl Plugin for NetworkPlugin {
-    fn build(&self, app: &mut AppBuilder) {
+    fn build(&self, app: &mut App) {
         app.add_plugin(CoreNetworkPlugin::default())
             //.add_startup_system(startup.system())
             .add_system_set(SystemSet::on_enter(AppState::InGame).with_system(startup.system()))
@@ -27,13 +27,13 @@ impl Plugin for NetworkPlugin {
                     .with_system(handle_events.system())
                     .with_system(handle_server_broadcasts.system())
                     .label("receive")
-                    .before("simulation")
+                    .before("physics")
             )
             .add_system_set(
                 SystemSet::on_update(AppState::InGame)
                     .with_system(broadcast_client_data.system())
-                    .label("broadcasts")
-                    .after("simulation")
+                    .label("broadcast")
+                    .after("physics")
             );
     }
 }

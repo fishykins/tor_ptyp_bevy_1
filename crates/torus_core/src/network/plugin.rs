@@ -10,7 +10,7 @@ use super::{messages::*, protocols::*};
 pub struct NetworkPlugin;
 
 impl Plugin for NetworkPlugin {
-    fn build(&self, app: &mut bevy::prelude::AppBuilder) {
+    fn build(&self, app: &mut App) {
         let net_plugin = TurbulenceNetPlugin::default();
         //net_plugin.idle_timeout_ms = Some(5000);
         //net_plugin.auto_heartbeat_ms = Some(2000);
