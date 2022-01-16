@@ -25,6 +25,7 @@ pub fn handle_events(mut net: ResMut<NetworkResource>, mut network_events: Event
                 log::info!("[{}] has dissconnected.", handle);
             }
             NetworkEvent::Error(handle, error) => {
+                net.disconnect(*handle);
                 log::error!("Network error on connection [{}]: {:?}", handle, error);
             }
             _ => {}

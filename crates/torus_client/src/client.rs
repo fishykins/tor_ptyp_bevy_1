@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{agents::spawn_agents, assets::*, input::InputPlugin, network::NetworkPlugin};
+use crate::{agents::spawn_agents, assets::*, input::InputPlugin, network::NetworkPlugin, camera_update};
 use bevy::{
     app::ScheduleRunnerSettings,
     log::{Level, LogSettings},
@@ -18,7 +18,7 @@ use torus_core::{
 pub fn run(s: Session) {
     // Debug settings
     let mut log_setting = LogSettings::default();
-    log_setting.level = Level::DEBUG;
+    log_setting.level = Level::INFO;
 
     // Build the app
     let mut app = App::new();
@@ -79,6 +79,7 @@ pub fn run(s: Session) {
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
             .with_system(transform_update)
+            .with_system(camera_update)
             .label("transform")
             .after("physics"),
     )

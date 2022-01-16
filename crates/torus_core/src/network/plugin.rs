@@ -11,9 +11,9 @@ pub struct NetworkPlugin;
 
 impl Plugin for NetworkPlugin {
     fn build(&self, app: &mut App) {
-        let net_plugin = TurbulenceNetPlugin::default();
-        //net_plugin.idle_timeout_ms = Some(5000);
-        //net_plugin.auto_heartbeat_ms = Some(2000);
+        let mut net_plugin = TurbulenceNetPlugin::default();
+        net_plugin.idle_timeout_ms = Some(5000);
+        net_plugin.auto_heartbeat_ms = Some(2000);
 
         // This is global.
         app.add_plugin(net_plugin)
