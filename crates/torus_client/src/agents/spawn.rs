@@ -7,7 +7,7 @@ use torus_core::{
         data::ClientId,
         {Local, Remote},
     },
-    physics::Rigidbody,
+    physics::{Rigidbody, Collider},
 };
 
 use crate::agents::Player;
@@ -42,7 +42,9 @@ pub fn spawn_agents(
                 entity
                     .insert(Agent::new(*handle))
                     .insert(Rigidbody::<Remote>::from_translation(data.position))
-                    .insert(Biped::default());
+                    .insert(Collider::default())
+                    .insert(Biped::default())
+                    .insert(Name::new(format!("Agent {}", handle).to_string()));
                 if client_id.is_equal(*handle) {
                     entity
                         .insert(Player::default())

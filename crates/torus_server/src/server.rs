@@ -11,7 +11,7 @@ use torus_core::{
     agents::move_agents,
     flow::{AppState, GameTick, Session},
     network::Local,
-    physics::{physics_update, transform_update},
+    physics::{physics_update, apply_transforms_system},
 };
 
 pub fn run(s: Session) {
@@ -57,7 +57,7 @@ pub fn run(s: Session) {
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
-            .with_system(transform_update)
+            .with_system(apply_transforms_system)
             .label("transform")
             .after("physics"),
     )

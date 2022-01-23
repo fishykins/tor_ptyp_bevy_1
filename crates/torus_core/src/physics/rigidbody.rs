@@ -2,7 +2,7 @@ use super::normalize_angle;
 use bevy::prelude::*;
 use bevy_inspector_egui::Inspectable;
 
-#[derive(Clone, Inspectable, Reflect)]
+#[derive(Clone, Inspectable, Reflect, PartialEq)]
 pub enum RigidbodyType {
     Static,
     Dynamic,

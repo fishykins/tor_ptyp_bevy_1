@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use rand::prelude::*;
+use torus_core::physics::Collider;
 
 
 pub fn spawn_deco(commands: &mut Commands) {
@@ -13,7 +14,7 @@ pub fn spawn_deco(commands: &mut Commands) {
         ..shapes::RegularPolygon::default()
     };
 
-    commands.spawn_bundle(GeometryBuilder::build_as(
+    let mut entity = commands.spawn_bundle(GeometryBuilder::build_as(
         &shape,
         DrawMode::Outlined {
             fill_mode: FillMode::color(Color::rgb(rng.gen(), rng.gen(), rng.gen())),
@@ -21,4 +22,6 @@ pub fn spawn_deco(commands: &mut Commands) {
         },
         Transform::from_translation(Vec3::new(rng.gen_range(0.0..1200.0), rng.gen_range(0.0..1200.0), -10.0))
     ));
+
+    entity.insert(Collider::default());
 }

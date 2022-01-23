@@ -7,13 +7,13 @@ use bevy::{
     prelude::*,
     render::camera::WindowOrigin,
 };
-use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
+use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin, WorldInspectorParams};
 use bevy_prototype_lyon::plugin::ShapePlugin;
 use torus_core::{
     agents::{move_agents, AgentEvent},
     flow::{AppState, GameTick, Session},
     network::{data::ClientId, Local},
-    physics::{physics_update, transform_update},
+    physics::{physics_update, apply_transforms_system},
 };
 
 pub fn run(s: Session) {
@@ -59,6 +59,7 @@ pub fn run(s: Session) {
         .register_inspectable::<torus_core::agents::Controller>()
         .register_inspectable::<torus_core::physics::Rigidbody<torus_core::network::Local>>()
         .register_inspectable::<torus_core::physics::Rigidbody<torus_core::network::Remote>>()
+        .register_inspectable::<torus_core::physics::Collider>()
         .register_inspectable::<torus_core::agents::Biped>();
 
     // Systems
@@ -80,7 +81,7 @@ pub fn run(s: Session) {
     )
     .add_system_set(
         SystemSet::on_update(AppState::InGame)
-            .with_system(transform_update)
+            .with_system(apply_transforms_system)
             .with_system(camera_update)
             .label("transform")
             .after("physics"),
@@ -103,11 +104,12 @@ pub fn run(s: Session) {
 #[derive(Component, Debug)]
 pub struct MainCamera;
 
-fn startup(mut commands: Commands) {
+fn startup(mut commands: Commands, mut inspector_windows: ResMut<WorldInspectorParams>) {
     let mut camera = OrthographicCameraBundle::new_2d();
     camera.orthographic_projection.window_origin = WindowOrigin::BottomLeft;
     commands.spawn_bundle(camera).insert(MainCamera);
     for _ in 0..20 {
         spawn_deco(&mut commands);
     }
+    inspector_windows.enabled = false;
 }

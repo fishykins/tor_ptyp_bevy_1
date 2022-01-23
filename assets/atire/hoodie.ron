@@ -1,0 +1,5 @@
+Layer(
+    name: "hoodie",
+    body: [Torso, Arms]
+    pockets: [Pocket(name: "")]
+)
