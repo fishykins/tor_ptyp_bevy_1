@@ -1,4 +1,5 @@
 pub mod agents;
+pub mod ballistics;
 pub mod flow;
 pub mod input;
 pub mod physics;

@@ -3723,6 +3723,7 @@ name = "torus"
 version = "0.1.0"
 dependencies = [
  "argh",
+ "ron",
  "torus_client",
  "torus_core",
  "torus_server",
@@ -3738,6 +3739,9 @@ dependencies = [
  "bevy_networking_turbulence",
  "bevy_prototype_lyon",
  "rand 0.8.4",
+ "ron",
+ "serde",
+ "serde_json",
  "torus_core",
 ]
 
