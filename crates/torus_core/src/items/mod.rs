@@ -1,14 +1,14 @@
-pub mod atire;
+pub mod attire;
 pub mod components;
 pub mod containers;
 
-mod body;
+mod manakin;
 mod holdable;
 mod item;
 mod weapons;
 mod material;
 
-pub use body::Body;
+pub use manakin::Manakin;
 pub use holdable::Holdable;
 pub use item::{Item, Physical, Wrappable};
 pub use weapons::Weapon;
@@ -19,7 +19,7 @@ pub const PI: DefaultFloat = std::f32::consts::PI;
 
 #[cfg(test)]
 mod tests {
-    use crate::items::{atire::*, atire::AtireSlots::*, components::*, containers::*, Wrappable};
+    use crate::items::{attire::*, attire::AttireSlots::*, components::*, containers::*, Wrappable};
 
     #[test]
     fn atire_test() {

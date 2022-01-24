@@ -1,23 +1,23 @@
 use std::{convert::TryFrom};
 
-use crate::items::{atire::*, containers::*, Item, Wrappable};
+use crate::items::{attire::*, containers::*, Item, Wrappable};
 
 #[derive(Debug)]
 pub struct Layer {
     name: String,
-    slots: Vec<AtireSlots>,
+    slots: Vec<AttireSlots>,
     pockets: Vec<Pocket>,
 }
 
 impl Layer {
-    pub fn new(name: String, slots: Vec<AtireSlots>, pockets: Vec<Pocket>) -> Self {
+    pub fn new(name: String, slots: Vec<AttireSlots>, pockets: Vec<Pocket>) -> Self {
         Self {
             name,
             slots,
             pockets,
         }
     }
-    pub fn slots(&self) -> Vec<AtireSlots> {
+    pub fn slots(&self) -> Vec<AttireSlots> {
         self.slots.clone()
     }
 
@@ -41,7 +41,7 @@ impl Layer {
 
 impl Wrappable for Layer {
     fn wrap(self) -> Item {
-        Item::Atire(Atire::Layer(self))
+        Item::Attire(Attire::Layer(self))
     }
 
     fn try_unwrap(_: &Item) -> Option<&Self> {
@@ -58,8 +58,8 @@ impl TryFrom<Item> for Layer {
 
     fn try_from(item: Item) -> Result<Self, Self::Error> {
         match item {
-            Item::Atire(a) => match a {
-                Atire::Layer(l) => Ok(l),
+            Item::Attire(a) => match a {
+                Attire::Layer(l) => Ok(l),
             },
             _ => Err("Failed to get Layer from Item"),
         }

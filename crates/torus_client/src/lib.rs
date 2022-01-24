@@ -1,9 +1,10 @@
 pub mod agents;
 pub mod assets;
+pub mod audio;
+pub mod debug;
 pub mod input;
 pub mod network;
 pub mod world;
-pub mod debug;
 
 mod camera;
 mod client;

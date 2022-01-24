@@ -1,4 +1,4 @@
-/// Somthing that the player can equip in their hands.
+/// Somthing that an agent can hold in their hands.
 pub trait Holdable {
 
 }

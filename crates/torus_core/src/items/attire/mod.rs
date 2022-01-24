@@ -2,16 +2,16 @@ mod layer;
 
 pub use layer::Layer;
 
-use crate::items::{atire::AtireSlots::*, Item, Wrappable};
+use crate::items::{attire::AttireSlots::*, Item, Wrappable};
 
 /// All the different implimentors of ['atire']
 #[derive(Debug)]
-pub enum Atire {
+pub enum Attire {
     Layer(Layer),
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum AtireSlots {
+pub enum AttireSlots {
     Feet,
     Legs,
     Waiste,
@@ -22,35 +22,35 @@ pub enum AtireSlots {
     Hands,
 }
 
-impl AtireSlots {
-    pub fn all() -> Vec<AtireSlots> {
+impl AttireSlots {
+    pub fn all() -> Vec<AttireSlots> {
         vec![Feet, Legs, Waiste, Baselayer, Midlayer, Jacket, Head, Hands]
     }
 }
 
-impl Atire {
-    pub fn slots(&self) -> Vec<AtireSlots> {
+impl Attire {
+    pub fn slots(&self) -> Vec<AttireSlots> {
         match self {
-            Atire::Layer(layer) => layer.slots(),
+            Attire::Layer(layer) => layer.slots(),
         }
     }
 }
 
-impl Wrappable for Atire {
+impl Wrappable for Attire {
     fn wrap(self) -> Item {
-        Item::Atire(self)
+        Item::Attire(self)
     }
 
     fn try_unwrap(item: &Item) -> Option<&Self> {
         match item {
-            Item::Atire(slef) => Some(slef),
+            Item::Attire(slef) => Some(slef),
             _ => None,
         }
     }
 
     fn try_unwrap_mut(item: &mut Item) -> Option<&mut Self> {
         match item {
-            Item::Atire(slef) => Some(slef),
+            Item::Attire(slef) => Some(slef),
             _ => None,
         }
     }

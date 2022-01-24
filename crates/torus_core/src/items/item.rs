@@ -1,9 +1,9 @@
-use crate::items::{DefaultFloat, atire::*, components::*, containers::*};
+use crate::items::{DefaultFloat, attire::*, components::*, containers::*};
 
 /// A wrapper enum for all item types.
 #[derive(Debug)]
 pub enum Item {
-    Atire(Atire),
+    Attire(Attire),
     Component(Component),
     Container(Container),
     None,
@@ -19,7 +19,7 @@ impl Item {
 
     pub fn weight(&self) -> DefaultFloat {
         match self {
-            Item::Atire(_) => todo!(),
+            Item::Attire(_) => todo!(),
             Item::Component(c) => c.weight(),
             Item::Container(_) => todo!(),
             _ => 0.0,
@@ -28,7 +28,7 @@ impl Item {
 
     pub fn volume(&self) -> DefaultFloat {
         match self {
-            Item::Atire(_) => todo!(),
+            Item::Attire(_) => todo!(),
             Item::Component(c) => c.volume(),
             Item::Container(_) => todo!(),
             _ => 0.0,
