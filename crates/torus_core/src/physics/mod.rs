@@ -3,6 +3,7 @@ mod update;
 mod transform;
 mod collider;
 mod collider_shape;
+mod matter;
 
 use std::f32::consts::PI;
 
@@ -11,6 +12,7 @@ pub use transform::*;
 pub use rigidbody::*;
 pub use update::*;
 pub use collider::*;
+pub use matter::*;
 
 pub fn lerp_angle(a: f32, b: f32, t: f32) -> f32 {
     let mut angle = b - a;

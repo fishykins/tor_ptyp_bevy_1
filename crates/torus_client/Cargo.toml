@@ -7,10 +7,21 @@ edition = "2021"
 rand = { version = "0.8" }
 ron = { version = "0.7.0" }
 torus_core = { path = "../torus_core" }
-bevy = { version = "0.6.0" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+
+#bevy
+bevy = { version = "0.6.0", features = [
+  "bevy_gilrs",
+  "bevy_winit",
+  "render",
+  "png",
+  "hdr",
+  "x11",
+  "filesystem_watcher",
+] }
 bevy_asset_loader = { version = "0.8.0" }
 bevy-inspector-egui = { version = "0.7" }
 bevy_prototype_lyon = { version = "0.4.0" }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = { version = "1.0" }
+bevy_kira_audio = { version = "0.8" }
 bevy_networking_turbulence = { git = "https://github.com/smokku/bevy_networking_turbulence", branch = "master" }

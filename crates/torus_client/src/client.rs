@@ -1,19 +1,22 @@
-use std::time::Duration;
-
-use crate::{agents::spawn_agents, assets::*, input::InputPlugin, network::NetworkPlugin, camera_update, world::spawn_deco};
+use crate::{
+    agents::spawn_agents, assets::*, camera_update, input::InputPlugin, network::NetworkPlugin,
+    world::spawn_deco,
+    audio::AudioPlugin,
+};
 use bevy::{
     app::ScheduleRunnerSettings,
     log::{Level, LogSettings},
     prelude::*,
     render::camera::WindowOrigin,
 };
-use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin, WorldInspectorParams};
+use bevy_inspector_egui::{RegisterInspectable, WorldInspectorParams, WorldInspectorPlugin};
 use bevy_prototype_lyon::plugin::ShapePlugin;
+use std::time::Duration;
 use torus_core::{
     agents::{move_agents, AgentEvent},
     flow::{AppState, GameTick, Session},
     network::{data::ClientId, Local},
-    physics::{physics_update, apply_transforms_system},
+    physics::{apply_transforms_system, physics_update},
 };
 
 pub fn run(s: Session) {
@@ -47,6 +50,7 @@ pub fn run(s: Session) {
     app.add_plugins(DefaultPlugins)
         .add_plugin(AssetPlugin)
         .add_plugin(NetworkPlugin)
+        .add_plugin(AudioPlugin)
         .add_plugin(WorldInspectorPlugin::new())
         .add_plugin(InputPlugin)
         .add_plugin(ShapePlugin);

@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 torus_core = { path = "../torus_core" }
-bevy = { version = "0.6.0" }
+bevy = { version = "0.6.0", default-features = false }
 bevy_networking_turbulence = { git = "https://github.com/smokku/bevy_networking_turbulence", branch = "master" }
 rand = "0.8.3"
 serde = "1.0"

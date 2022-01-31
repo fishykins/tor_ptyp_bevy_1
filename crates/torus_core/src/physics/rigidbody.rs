@@ -65,7 +65,7 @@ where
 {
     fn default() -> Self {
         Self {
-            r#type: RigidbodyType::Static,
+            r#type: RigidbodyType::Dynamic,
             mass: 100.0,
             linear_velocity: Vec2::default(),
             angular_velocity: 0.0,

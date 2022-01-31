@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.6.0" }
+bevy = { version = "0.6.0", default-features = false }
 bevy_asset_loader = { version = "0.8.0" }
 bevy-inspector-egui = { version = "0.7" }
 rand = { version = "0.8.3" }
